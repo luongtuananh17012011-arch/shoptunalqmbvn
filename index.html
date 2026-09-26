@@ -662,7 +662,7 @@
       <a href="#" onclick="switchTab('bxh')" id="nav-bxh">🏆 Bảng Xếp Hạng & Đua Top</a>
       <a href="#" onclick="switchTab('wheel')" id="nav-wheel">🎡 Vòng Quay May Mắn</a>
       <a href="#" onclick="switchTab('tasks')" id="nav-tasks">🎯 Nhiệm Vụ & Đổi Quà</a>
-      <a href="#" onclick="switchTab('admin')" id="nav-admin">⚙️ Quản Trị Admin</a>
+      <a href="#" onclick="switchTab('admin')" id="nav-admin" style="display:none;">⚙️ Quản Trị Admin</a>
     </div>
     <div class="nav-actions">
       <div id="vip-badge-container"></div>
@@ -3162,6 +3162,18 @@ function renderFlashSaleAdminUI() {
   `;
 }
 startDemoWheelSystem();
+</script>
+
+<script>
+(function(){
+  const path=(window.location.pathname||'').replace(/\/+$/,'');
+  const isAdminRoute = path === '/admin' || path === '/admin/index.html';
+  if(isAdminRoute){
+    window.addEventListener('DOMContentLoaded', function(){
+      if(typeof switchTab === 'function') switchTab('admin');
+    });
+  }
+})();
 </script>
 </body>
 </html>
