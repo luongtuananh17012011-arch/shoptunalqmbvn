@@ -3878,6 +3878,605 @@ startDemoWheelSystem();
   }
   document.addEventListener('DOMContentLoaded',showAdminGate);
 })();
+</script><script>
+(function () {
+  'use strict';
+
+  /* =========================================================
+     PHẦN 1 — ĐĂNG KÝ / ĐĂNG NHẬP TRƯỚC KHI VÀO SHOP
+     ========================================================= */
+
+  const USER_KEY = 'tuna_shop_users_v1';
+  const LOGIN_KEY = 'tuna_shop_current_user_v1';
+
+  let tunaUsers = JSON.parse(localStorage.getItem(USER_KEY) || '{}');
+  let tunaCurrentUser = localStorage.getItem(LOGIN_KEY) || '';
+
+  function tunaSaveUsers() {
+    localStorage.setItem(USER_KEY, JSON.stringify(tunaUsers));
+  }
+
+  function tunaEscape(s) {
+    return String(s || '').replace(/[&<>"']/g, function (c) {
+      return ({
+        '&':'&amp;',
+        '<':'&lt;',
+        '>':'&gt;',
+        '"':'&quot;',
+        "'":'&#039;'
+      })[c];
+    });
+  }
+
+  function tunaShowLogin() {
+    if (document.getElementById('tuna-auth-overlay')) return;
+
+    const box = document.createElement('div');
+    box.id = 'tuna-auth-overlay';
+    box.style.cssText =
+      'position:fixed;inset:0;z-index:999999;background:#020617;' +
+      'display:flex;align-items:center;justify-content:center;padding:20px;' +
+      'box-sizing:border-box;';
+
+    box.innerHTML = `
+      <div style="
+        width:min(400px,100%);
+        background:#0f172a;
+        border:1px solid #334155;
+        border-radius:18px;
+        padding:24px;
+        box-sizing:border-box;
+        box-shadow:0 20px 70px rgba(0,0,0,.55);
+        color:#fff;
+      ">
+        <div style="text-align:center;margin-bottom:20px;">
+          <div style="font-size:34px;">🛍️</div>
+          <h2 style="margin:8px 0 5px;">TUNA SHOP</h2>
+          <div style="font-size:13px;color:#94a3b8;">
+            Đăng nhập hoặc đăng ký để vào shop
+          </div>
+        </div>
+
+        <div id="tuna-login-form">
+          <input id="tuna-login-user"
+            placeholder="Tên tài khoản"
+            autocomplete="username"
+            style="width:100%;box-sizing:border-box;padding:12px;margin-bottom:10px;border-radius:10px;border:1px solid #475569;background:#020617;color:#fff;">
+
+          <input id="tuna-login-pass"
+            type="password"
+            placeholder="Mật khẩu"
+            autocomplete="current-password"
+            style="width:100%;box-sizing:border-box;padding:12px;margin-bottom:10px;border-radius:10px;border:1px solid #475569;background:#020617;color:#fff;">
+
+          <button onclick="tunaLogin()" style="
+            width:100%;padding:12px;border:0;border-radius:10px;
+            background:#22c55e;color:#052e16;font-weight:900;cursor:pointer;
+          ">🔐 Đăng nhập</button>
+
+          <button onclick="tunaShowRegister()" style="
+            width:100%;padding:11px;margin-top:9px;border:1px solid #475569;
+            border-radius:10px;background:#1e293b;color:#fff;font-weight:700;cursor:pointer;
+          ">📝 Đăng ký tài khoản</button>
+        </div>
+
+        <div id="tuna-register-form" style="display:none;">
+          <input id="tuna-reg-user"
+            placeholder="Tên tài khoản mới"
+            autocomplete="username"
+            style="width:100%;box-sizing:border-box;padding:12px;margin-bottom:10px;border-radius:10px;border:1px solid #475569;background:#020617;color:#fff;">
+
+          <input id="tuna-reg-pass"
+            type="password"
+            placeholder="Mật khẩu"
+            autocomplete="new-password"
+            style="width:100%;box-sizing:border-box;padding:12px;margin-bottom:10px;border-radius:10px;border:1px solid #475569;background:#020617;color:#fff;">
+
+          <input id="tuna-reg-pass2"
+            type="password"
+            placeholder="Nhập lại mật khẩu"
+            autocomplete="new-password"
+            style="width:100%;box-sizing:border-box;padding:12px;margin-bottom:10px;border-radius:10px;border:1px solid #475569;background:#020617;color:#fff;">
+
+          <button onclick="tunaRegister()" style="
+            width:100%;padding:12px;border:0;border-radius:10px;
+            background:#38bdf8;color:#082f49;font-weight:900;cursor:pointer;
+          ">✅ Tạo tài khoản</button>
+
+          <button onclick="tunaShowLogin()" style="
+            width:100%;padding:11px;margin-top:9px;border:1px solid #475569;
+            border-radius:10px;background:#1e293b;color:#fff;font-weight:700;cursor:pointer;
+          ">← Quay lại đăng nhập</button>
+        </div>
+
+        <div id="tuna-auth-msg"
+          style="margin-top:12px;text-align:center;font-size:13px;font-weight:700;"></div>
+      </div>
+    `;
+
+    document.body.appendChild(box);
+  }
+
+  window.tunaShowRegister = function () {
+    const a = document.getElementById('tuna-login-form');
+    const b = document.getElementById('tuna-register-form');
+    if (a) a.style.display = 'none';
+    if (b) b.style.display = 'block';
+    const m = document.getElementById('tuna-auth-msg');
+    if (m) m.textContent = '';
+  };
+
+  window.tunaShowLogin = function () {
+    const a = document.getElementById('tuna-login-form');
+    const b = document.getElementById('tuna-register-form');
+    if (a) a.style.display = 'block';
+    if (b) b.style.display = 'none';
+    const m = document.getElementById('tuna-auth-msg');
+    if (m) m.textContent = '';
+  };
+
+  window.tunaRegister = function () {
+    const u = (document.getElementById('tuna-reg-user')?.value || '').trim();
+    const p = document.getElementById('tuna-reg-pass')?.value || '';
+    const p2 = document.getElementById('tuna-reg-pass2')?.value || '';
+    const msg = document.getElementById('tuna-auth-msg');
+
+    if (!u || u.length < 3) {
+      msg.textContent = '⚠️ Tên tài khoản phải có ít nhất 3 ký tự.';
+      msg.style.color = '#f87171';
+      return;
+    }
+
+    if (p.length < 4) {
+      msg.textContent = '⚠️ Mật khẩu phải có ít nhất 4 ký tự.';
+      msg.style.color = '#f87171';
+      return;
+    }
+
+    if (p !== p2) {
+      msg.textContent = '⚠️ Hai mật khẩu không giống nhau.';
+      msg.style.color = '#f87171';
+      return;
+    }
+
+    const key = u.toLowerCase();
+
+    if (tunaUsers[key]) {
+      msg.textContent = '⚠️ Tài khoản đã tồn tại.';
+      msg.style.color = '#f87171';
+      return;
+    }
+
+    tunaUsers[key] = {
+      username: u,
+      password: p,
+      createdAt: new Date().toISOString()
+    };
+
+    tunaSaveUsers();
+
+    msg.textContent = '✅ Đăng ký thành công! Hãy đăng nhập.';
+    msg.style.color = '#34d399';
+
+    setTimeout(function () {
+      tunaShowLogin();
+      const lu = document.getElementById('tuna-login-user');
+      if (lu) lu.value = u;
+    }, 700);
+  };
+
+  window.tunaLogin = function () {
+    const u = (document.getElementById('tuna-login-user')?.value || '').trim();
+    const p = document.getElementById('tuna-login-pass')?.value || '';
+    const msg = document.getElementById('tuna-auth-msg');
+
+    const key = u.toLowerCase();
+
+    if (!tunaUsers[key] || tunaUsers[key].password !== p) {
+      msg.textContent = '❌ Sai tài khoản hoặc mật khẩu.';
+      msg.style.color = '#f87171';
+      return;
+    }
+
+    tunaCurrentUser = tunaUsers[key].username;
+    localStorage.setItem(LOGIN_KEY, tunaCurrentUser);
+
+    msg.textContent = '✅ Đăng nhập thành công!';
+    msg.style.color = '#34d399';
+
+    setTimeout(function () {
+      const overlay = document.getElementById('tuna-auth-overlay');
+      if (overlay) overlay.remove();
+      tunaAddUserBar();
+    }, 400);
+  };
+
+  window.tunaLogout = function () {
+    localStorage.removeItem(LOGIN_KEY);
+    tunaCurrentUser = '';
+    location.reload();
+  };
+
+  function tunaAddUserBar() {
+    if (!tunaCurrentUser) return;
+    if (document.getElementById('tuna-user-bar')) return;
+
+    const bar = document.createElement('div');
+    bar.id = 'tuna-user-bar';
+    bar.style.cssText =
+      'position:fixed;right:12px;top:12px;z-index:99990;' +
+      'background:#0f172a;border:1px solid #334155;border-radius:10px;' +
+      'padding:7px 10px;color:#fff;font-size:12px;display:flex;' +
+      'align-items:center;gap:8px;box-shadow:0 8px 30px rgba(0,0,0,.3);';
+
+    bar.innerHTML =
+      '👤 <b>' + tunaEscape(tunaCurrentUser) + '</b>' +
+      '<button onclick="tunaLogout()" style="border:0;border-radius:7px;padding:5px 8px;background:#dc2626;color:#fff;font-weight:700;cursor:pointer;">Thoát</button>';
+
+    document.body.appendChild(bar);
+  }
+
+  /* =========================================================
+     PHẦN 2 — ADMIN TẠO "PHẦN THƯỞNG KHÁC" BẰNG ĐIỂM
+     ========================================================= */
+
+  const CUSTOM_REWARD_KEY = 'shop_custom_point_rewards_v1';
+
+  let customPointRewards =
+    JSON.parse(localStorage.getItem(CUSTOM_REWARD_KEY) || '[]');
+
+  function saveCustomPointRewards() {
+    localStorage.setItem(
+      CUSTOM_REWARD_KEY,
+      JSON.stringify(customPointRewards)
+    );
+  }
+
+  function addCustomRewardsToSystem() {
+    if (typeof POINT_REWARDS === 'undefined') return;
+
+    customPointRewards.forEach(function (r) {
+      if (!POINT_REWARDS.some(function (x) {
+        return x.id === r.id;
+      })) {
+        POINT_REWARDS.push(r);
+      }
+    });
+  }
+
+  function renderCustomPointRewardsAdmin() {
+    const box = document.getElementById('tuna-custom-reward-admin-list');
+    if (!box) return;
+
+    if (!customPointRewards.length) {
+      box.innerHTML =
+        '<div style="opacity:.7;font-size:13px;">Chưa có phần thưởng khác.</div>';
+      return;
+    }
+
+    box.innerHTML = customPointRewards.map(function (r) {
+      return `
+        <div style="
+          padding:10px;
+          margin:7px 0;
+          border:1px solid #475569;
+          border-radius:9px;
+          background:#0f172a;
+        ">
+          <div style="font-weight:900;color:#fbbf24;">
+            ${tunaEscape(r.title)}
+          </div>
+
+          <div style="font-size:12px;color:#cbd5e1;margin-top:4px;">
+            💎 ${Number(r.points).toLocaleString('vi-VN')} điểm
+          </div>
+
+          <div style="font-size:12px;color:#94a3b8;margin-top:4px;">
+            🎁 ${tunaEscape(r.content)}
+          </div>
+
+          <button
+            onclick="tunaDeleteCustomReward('${r.id}')"
+            style="
+              margin-top:8px;
+              border:0;
+              border-radius:7px;
+              padding:6px 10px;
+              background:#dc2626;
+              color:#fff;
+              font-weight:700;
+              cursor:pointer;
+            "
+          >Xóa phần thưởng</button>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function injectAdminCustomRewardPanel() {
+    const admin = document.getElementById('admin-section');
+    if (!admin) return;
+
+    if (document.getElementById('tuna-custom-reward-panel')) {
+      renderCustomPointRewardsAdmin();
+      return;
+    }
+
+    const panel = document.createElement('div');
+    panel.id = 'tuna-custom-reward-panel';
+    panel.className = 'category-box';
+    panel.style.cssText =
+      'margin-top:18px;border:1.5px solid #a78bfa;';
+
+    panel.innerHTML = `
+      <div class="category-header" style="border-bottom-color:#a78bfa;">
+        <span class="category-title" style="color:#ddd6fe;">
+          🎁 Quản Lý Phần Thưởng Khác
+        </span>
+      </div>
+
+      <div style="
+        padding:12px;
+        background:#1e293b;
+        border-radius:10px;
+        border:1px solid #475569;
+      ">
+
+        <input id="tuna-custom-reward-name"
+          placeholder="Tên phần thưởng"
+          style="width:100%;box-sizing:border-box;padding:10px;margin-bottom:8px;border-radius:8px;border:1px solid #475569;background:#020617;color:#fff;">
+
+        <input id="tuna-custom-reward-points"
+          type="number"
+          min="1"
+          placeholder="Số điểm cần đổi"
+          style="width:100%;box-sizing:border-box;padding:10px;margin-bottom:8px;border-radius:8px;border:1px solid #475569;background:#020617;color:#fff;">
+
+        <textarea id="tuna-custom-reward-content"
+          placeholder="Nội dung phần thưởng / quà người dùng nhận"
+          rows="3"
+          style="width:100%;box-sizing:border-box;padding:10px;margin-bottom:8px;border-radius:8px;border:1px solid #475569;background:#020617;color:#fff;resize:vertical;"></textarea>
+
+        <button onclick="tunaCreateCustomReward()" style="
+          width:100%;
+          padding:11px;
+          border:0;
+          border-radius:8px;
+          background:#8b5cf6;
+          color:#fff;
+          font-weight:900;
+          cursor:pointer;
+        ">➕ Tạo Phần Thưởng</button>
+
+        <div id="tuna-custom-reward-notice"
+          style="margin-top:9px;font-size:13px;font-weight:700;"></div>
+      </div>
+
+      <div style="
+        margin-top:12px;
+        font-size:13px;
+        color:#cbd5e1;
+        font-weight:800;
+      ">📋 Phần thưởng đã tạo</div>
+
+      <div id="tuna-custom-reward-admin-list"
+        style="margin-top:8px;max-height:320px;overflow-y:auto;">
+      </div>
+    `;
+
+    admin.appendChild(panel);
+    renderCustomPointRewardsAdmin();
+  }
+
+  window.tunaCreateCustomReward = function () {
+    const name =
+      (document.getElementById('tuna-custom-reward-name')?.value || '').trim();
+
+    const points =
+      Number(document.getElementById('tuna-custom-reward-points')?.value || 0);
+
+    const content =
+      (document.getElementById('tuna-custom-reward-content')?.value || '').trim();
+
+    const notice =
+      document.getElementById('tuna-custom-reward-notice');
+
+    if (!name) {
+      notice.textContent = '⚠️ Chưa nhập tên phần thưởng.';
+      notice.style.color = '#f87171';
+      return;
+    }
+
+    if (!Number.isInteger(points) || points <= 0) {
+      notice.textContent = '⚠️ Số điểm không hợp lệ.';
+      notice.style.color = '#f87171';
+      return;
+    }
+
+    if (!content) {
+      notice.textContent = '⚠️ Chưa nhập nội dung phần thưởng.';
+      notice.style.color = '#f87171';
+      return;
+    }
+
+    const id =
+      'custom-' +
+      Date.now() +
+      '-' +
+      Math.floor(Math.random() * 9999);
+
+    const reward = {
+      id: id,
+      points: points,
+      title: '🎁 ' + name,
+      kind: 'custom',
+      content: content
+    };
+
+    customPointRewards.push(reward);
+    saveCustomPointRewards();
+
+    if (typeof POINT_REWARDS !== 'undefined') {
+      POINT_REWARDS.push(reward);
+    }
+
+    const n1 = document.getElementById('tuna-custom-reward-name');
+    const n2 = document.getElementById('tuna-custom-reward-points');
+    const n3 = document.getElementById('tuna-custom-reward-content');
+
+    if (n1) n1.value = '';
+    if (n2) n2.value = '';
+    if (n3) n3.value = '';
+
+    notice.textContent = '✅ Tạo phần thưởng thành công.';
+    notice.style.color = '#34d399';
+
+    renderCustomPointRewardsAdmin();
+
+    if (typeof renderPointRewards === 'function') {
+      renderPointRewards();
+    }
+  };
+
+  window.tunaDeleteCustomReward = function (id) {
+    if (!confirm('Bạn có chắc muốn xóa phần thưởng này?')) return;
+
+    customPointRewards =
+      customPointRewards.filter(function (r) {
+        return r.id !== id;
+      });
+
+    saveCustomPointRewards();
+
+    if (typeof POINT_REWARDS !== 'undefined') {
+      for (let i = POINT_REWARDS.length - 1; i >= 0; i--) {
+        if (POINT_REWARDS[i].id === id) {
+          POINT_REWARDS.splice(i, 1);
+        }
+      }
+    }
+
+    renderCustomPointRewardsAdmin();
+
+    if (typeof renderPointRewards === 'function') {
+      renderPointRewards();
+    }
+  };
+
+  /*
+   * Ghi đè hàm duyệt để phần thưởng "custom" cũng được
+   * gửi đúng nội dung vào Hòm Thư.
+   */
+  const oldApprovePointRequest =
+    window.approvePointRequest;
+
+  window.approvePointRequest = function (reqId) {
+    const req =
+      (typeof pointRequests !== 'undefined')
+        ? pointRequests.find(function (x) {
+            return x.id === reqId;
+          })
+        : null;
+
+    if (!req || req.status !== 'pending') return;
+
+    const reward =
+      (typeof POINT_REWARDS !== 'undefined')
+        ? POINT_REWARDS.find(function (x) {
+            return x.id === req.rewardId;
+          })
+        : null;
+
+    if (!reward) {
+      alert('Không tìm thấy phần thưởng.');
+      return;
+    }
+
+    /*
+     * Phần thưởng mới do Admin tạo.
+     */
+    if (reward.kind === 'custom') {
+      let message =
+        'Yêu cầu đổi quà đã được Admin duyệt.<br><br>' +
+        '🎁 <b>' + tunaEscape(reward.title) + '</b><br>' +
+        '📦 Phần thưởng: ' + tunaEscape(reward.content);
+
+      rewardMailbox.unshift({
+        title: '🎁 Đổi Quà Bằng Điểm - ' + reward.title,
+        message: message,
+        cash: 0,
+        opened: false,
+        time: new Date().toLocaleString('vi-VN')
+      });
+
+      req.status = 'approved';
+      req.approvedAt = new Date().toLocaleString('vi-VN');
+
+      savePointRequests();
+      saveRewardMailbox();
+
+      renderAdminPointRequests();
+      renderPointRequests();
+      renderRewardMailbox();
+
+      alert('✅ Đã duyệt và gửi phần thưởng vào Hòm Thư.');
+      return;
+    }
+
+    /*
+     * Các phần thưởng cũ vẫn chạy bằng code cũ.
+     */
+    if (typeof oldApprovePointRequest === 'function') {
+      oldApprovePointRequest(reqId);
+    }
+  };
+
+  /*
+   * Nạp các phần thưởng đã tạo trước đó.
+   */
+  addCustomRewardsToSystem();
+
+  /*
+   * Khi trang tải xong:
+   * - /?admin => không bắt đăng nhập khách.
+   * - Shop bình thường => bắt đăng nhập.
+   */
+  document.addEventListener('DOMContentLoaded', function () {
+
+    const isAdmin =
+      new URLSearchParams(location.search).has('admin');
+
+    if (!isAdmin) {
+      if (tunaCurrentUser) {
+        tunaAddUserBar();
+      } else {
+        tunaShowLogin();
+      }
+    }
+
+    /*
+     * Thêm khu vực phần thưởng vào Admin.
+     */
+    setTimeout(function () {
+      injectAdminCustomRewardPanel();
+    }, 100);
+
+    /*
+     * draw() của shop có thể chạy sau đó,
+     * nên render lại phần thưởng custom.
+     */
+    setTimeout(function () {
+      injectAdminCustomRewardPanel();
+
+      if (typeof renderPointRewards === 'function') {
+        renderPointRewards();
+      }
+
+      renderCustomPointRewardsAdmin();
+    }, 500);
+  });
+
+})();
 </script>
-</body>
+<body>
 </html>
