@@ -653,6 +653,686 @@
 
 </style>
 </head>
+ <script>
+/* =========================================================
+   TUNA SHOP - PATCH
+   1. THÔNG BÁO GIẢI CAO NHẤT VÒNG QUAY
+   2. ADMIN DUYỆT ĐỔI ĐIỂM -> CẤP ACC THẬT TỪ KHO
+   ========================================================= */
+
+(function () {
+  'use strict';
+
+  /* =========================================================
+     PHẦN 1: THÔNG BÁO GIẢI CAO NHẤT VÒNG QUAY
+     Hiện trên trang chủ khoảng 60 giây
+     ========================================================= */
+
+  function moneyPatch(n) {
+    return Number(n || 0).toLocaleString('vi-VN') + 'đ';
+  }
+
+  function getWheelRewardValuePatch(reward) {
+    if (!reward) return 0;
+
+    /* Phần thưởng tiền */
+    if (reward.type === 'cash') {
+      return Number(reward.value || 0);
+    }
+
+    /* Phần thưởng acc -> lấy giá túi làm giá trị giải */
+    if (reward.type === 'acc') {
+      try {
+        const pack = typeof getAllPacks === 'function'
+          ? getAllPacks().find(p => p.key === reward.value)
+          : null;
+
+        return pack ? Number(pack.price || 0) : 0;
+      } catch (e) {
+        return 0;
+      }
+    }
+
+    /* Phần thưởng chữ */
+    return 0;
+  }
+
+  function getHighestWheelRewardPatch() {
+    try {
+      if (
+        typeof luckyWheelRewards === 'undefined' ||
+        !Array.isArray(luckyWheelRewards)
+      ) {
+        return null;
+      }
+
+      const valid = luckyWheelRewards.filter(r =>
+        r && Number(r.weight || 0) > 0
+      );
+
+      if (!valid.length) return null;
+
+      return valid.reduce((highest, current) => {
+        return getWheelRewardValuePatch(current) >
+          getWheelRewardValuePatch(highest)
+          ? current
+          : highest;
+      });
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function getWheelRewardLabelPatch(reward) {
+    if (!reward) return 'giải cao nhất';
+
+    if (reward.type === 'cash') {
+      return moneyPatch(reward.value);
+    }
+
+    if (reward.type === 'acc') {
+      try {
+        const pack = typeof getAllPacks === 'function'
+          ? getAllPacks().find(p => p.key === reward.value)
+          : null;
+
+        return pack
+          ? '🎁 ' + pack.name
+          : '🎁 Acc ngẫu nhiên';
+      } catch (e) {
+        return '🎁 Acc ngẫu nhiên';
+      }
+    }
+
+    return reward.value || reward.name || 'Phần thưởng đặc biệt';
+  }
+
+  function createWheelHighestNoticePatch() {
+    let old = document.getElementById('tuna-wheel-highest-notice');
+
+    if (old) old.remove();
+
+    const box = document.createElement('div');
+    box.id = 'tuna-wheel-highest-notice';
+
+    box.innerHTML = `
+      <div style="
+        font-size:12px;
+        color:#fde68a;
+        font-weight:800;
+        margin-bottom:4px;
+      ">
+        🎉 CHÚC MỪNG!
+      </div>
+
+      <div id="tuna-wheel-highest-text"
+        style="
+          font-size:14px;
+          color:#fff;
+          line-height:1.45;
+          font-weight:800;
+        ">
+      </div>
+    `;
+
+    box.style.cssText = `
+      position:fixed;
+      left:50%;
+      top:18px;
+      transform:translateX(-50%);
+      width:min(92vw,430px);
+      z-index:999999;
+      padding:14px 16px;
+      border-radius:14px;
+      background:linear-gradient(
+        135deg,
+        rgba(124,58,237,.97),
+        rgba(30,41,59,.97)
+      );
+      border:1px solid rgba(250,204,21,.75);
+      box-shadow:0 12px 35px rgba(0,0,0,.45);
+      text-align:center;
+      animation:tunaWheelNoticeIn .35s ease;
+    `;
+
+    if (!document.getElementById('tuna-wheel-notice-style')) {
+      const style = document.createElement('style');
+      style.id = 'tuna-wheel-notice-style';
+
+      style.textContent = `
+        @keyframes tunaWheelNoticeIn {
+          from {
+            opacity:0;
+            transform:translate(-50%,-20px);
+          }
+          to {
+            opacity:1;
+            transform:translate(-50%,0);
+          }
+        }
+
+        @keyframes tunaWheelNoticeOut {
+          from {
+            opacity:1;
+            transform:translate(-50%,0);
+          }
+          to {
+            opacity:0;
+            transform:translate(-50%,-20px);
+          }
+        }
+      `;
+
+      document.head.appendChild(style);
+    }
+
+    document.body.appendChild(box);
+
+    return box;
+  }
+
+  function showWheelHighestNoticePatch() {
+    const highest = getHighestWheelRewardPatch();
+
+    if (!highest) return;
+
+    const highestValue = getWheelRewardValuePatch(highest);
+
+    /*
+      Lấy mail vòng quay mới nhất.
+      Nếu phần thưởng vừa nhận có giá trị bằng giải cao nhất
+      thì hiện thông báo.
+    */
+    if (
+      typeof rewardMailbox === 'undefined' ||
+      !Array.isArray(rewardMailbox) ||
+      !rewardMailbox.length
+    ) {
+      return;
+    }
+
+    const wheelMail = rewardMailbox.find(mail =>
+      mail &&
+      String(mail.title || '').includes('Vòng Quay May Mắn')
+    );
+
+    if (!wheelMail) return;
+
+    const noticeKey =
+      String(wheelMail.time || '') +
+      '|' +
+      String(wheelMail.message || '');
+
+    const lastNotice =
+      localStorage.getItem('tuna_last_wheel_highest_notice') || '';
+
+    if (noticeKey === lastNotice) return;
+
+    /*
+      Xác định giá trị phần thưởng trong mail.
+    */
+    let resultValue = Number(wheelMail.cash || 0);
+
+    if (!resultValue) {
+      const text = String(wheelMail.message || '');
+
+      /*
+        Nếu mail chứa tên túi thì lấy giá túi.
+      */
+      try {
+        if (typeof getAllPacks === 'function') {
+          const pack = getAllPacks().find(p =>
+            text.includes(p.name)
+          );
+
+          if (pack) {
+            resultValue = Number(pack.price || 0);
+          }
+        }
+      } catch (e) {}
+    }
+
+    /*
+      Chỉ thông báo khi đây là giải cao nhất.
+    */
+    if (resultValue < highestValue) return;
+
+    localStorage.setItem(
+      'tuna_last_wheel_highest_notice',
+      noticeKey
+    );
+
+    const box = createWheelHighestNoticePatch();
+    const textBox =
+      document.getElementById('tuna-wheel-highest-text');
+
+    if (textBox) {
+      textBox.innerHTML = `
+        Có người vừa trúng
+        <span style="color:#fde047;">
+          ${getWheelRewardLabelPatch(highest)}
+        </span>
+        — <span style="color:#facc15;">
+          GIẢI CAO NHẤT VÒNG QUAY 🎡
+        </span>
+      `;
+    }
+
+    /*
+      Tự ẩn sau 60 giây.
+    */
+    setTimeout(() => {
+      if (!box || !box.parentNode) return;
+
+      box.style.animation =
+        'tunaWheelNoticeOut .35s ease forwards';
+
+      setTimeout(() => {
+        if (box.parentNode) box.remove();
+      }, 400);
+    }, 60000);
+  }
+
+  /*
+    Theo dõi Hòm Thư.
+    Không sửa hàm quay hiện tại.
+  */
+  let lastWheelMailboxLength = 0;
+
+  setInterval(() => {
+    try {
+      if (
+        typeof rewardMailbox !== 'undefined' &&
+        Array.isArray(rewardMailbox)
+      ) {
+        if (rewardMailbox.length !== lastWheelMailboxLength) {
+          lastWheelMailboxLength = rewardMailbox.length;
+
+          setTimeout(() => {
+            showWheelHighestNoticePatch();
+          }, 300);
+        }
+      }
+    } catch (e) {}
+  }, 1000);
+
+
+  /* =========================================================
+     PHẦN 2: ADMIN DUYỆT ĐỔI ĐIỂM -> CẤP ACC
+     ========================================================= */
+
+  function getAvailableAccountsPatch(onlyVip) {
+    const result = [];
+
+    try {
+      if (typeof getAllPacks !== 'function') return result;
+      if (typeof getPackAccounts !== 'function') return result;
+      if (typeof usedAccounts === 'undefined') return result;
+
+      const packs = getAllPacks();
+
+      packs.forEach(pack => {
+        const accounts = getPackAccounts(pack.key);
+
+        accounts.forEach(acc => {
+          const isVip = String(acc).endsWith(':vip');
+          const raw = isVip
+            ? String(acc).slice(0, -4)
+            : String(acc);
+
+          const uniqueId = `${pack.key}_${raw}`;
+
+          if (usedAccounts.has(uniqueId)) return;
+
+          if (onlyVip && !isVip) return;
+
+          result.push({
+            packKey: pack.key,
+            packName: pack.name,
+            price: Number(pack.price || 0),
+            raw: raw,
+            uniqueId: uniqueId,
+            isVip: isVip
+          });
+        });
+      });
+    } catch (e) {
+      console.error(
+        'Lỗi tìm acc đổi điểm:',
+        e
+      );
+    }
+
+    return result;
+  }
+
+  function saveUsedAccountsPatch() {
+    try {
+      if (typeof usedAccounts !== 'undefined') {
+        localStorage.setItem(
+          'shop_used',
+          JSON.stringify([...usedAccounts])
+        );
+      }
+
+      if (typeof saveData === 'function') {
+        saveData();
+      }
+    } catch (e) {
+      console.error(
+        'Không lưu được acc đã cấp:',
+        e
+      );
+    }
+  }
+
+  function parseAccountPatch(raw) {
+    const parts = String(raw || '').split(':');
+
+    return {
+      username: parts.shift() || '',
+      password: parts.join(':') || ''
+    };
+  }
+
+  function makeDiscountCodePatch(percent) {
+    return (
+      'POINT' +
+      String(percent) +
+      '-' +
+      Date.now().toString().slice(-8) +
+      '-' +
+      Math.floor(100 + Math.random() * 900)
+    );
+  }
+
+  function addRewardMailPatch(data) {
+    if (
+      typeof rewardMailbox === 'undefined' ||
+      !Array.isArray(rewardMailbox)
+    ) {
+      return;
+    }
+
+    rewardMailbox.unshift({
+      title: data.title || '🎁 Phần Thưởng',
+      message: data.message || '',
+      cash: Number(data.cash || 0),
+      opened: false,
+      time: new Date().toLocaleString('vi-VN')
+    });
+
+    if (typeof saveRewardMailbox === 'function') {
+      saveRewardMailbox();
+    }
+
+    if (typeof renderRewardMailbox === 'function') {
+      renderRewardMailbox();
+    }
+  }
+
+
+  /*
+    Thay hàm approvePointRequest cũ bằng bản này.
+  */
+  window.approvePointRequest = function(reqId) {
+
+    try {
+
+      if (
+        typeof pointRequests === 'undefined' ||
+        !Array.isArray(pointRequests)
+      ) {
+        alert('Không tìm thấy danh sách yêu cầu đổi điểm.');
+        return;
+      }
+
+      const req =
+        pointRequests.find(x => x.id === reqId);
+
+      if (!req || req.status !== 'pending') {
+        return;
+      }
+
+      const reward =
+        typeof POINT_REWARDS !== 'undefined'
+          ? POINT_REWARDS.find(
+              x => x.id === req.rewardId
+            )
+          : null;
+
+      if (!reward) {
+        alert('Không tìm thấy phần thưởng.');
+        return;
+      }
+
+      let message = '';
+      let accountGiven = null;
+
+
+      /* ============================================
+         50 ĐIỂM -> 1 ACC NGẪU NHIÊN
+         ============================================ */
+      if (reward.id === 'acc50') {
+
+        const available =
+          getAvailableAccountsPatch(false);
+
+        if (!available.length) {
+          alert(
+            '⚠️ Kho hiện không còn acc khả dụng để cấp thưởng.'
+          );
+          return;
+        }
+
+        const chosen =
+          available[
+            Math.floor(
+              Math.random() * available.length
+            )
+          ];
+
+        usedAccounts.add(chosen.uniqueId);
+
+        saveUsedAccountsPatch();
+
+        accountGiven = parseAccountPatch(
+          chosen.raw
+        );
+
+        message = `
+          <div>
+            🎉 <b>ĐỔI QUÀ THÀNH CÔNG</b><br><br>
+
+            🎁 Phần thưởng:
+            <b>1 Acc ngẫu nhiên</b><br>
+
+            📦 Gói:
+            <b>${chosen.packName}</b><br><br>
+
+            👤 Tài khoản:
+            <b>${accountGiven.username}</b><br>
+
+            🔑 Mật khẩu:
+            <b>${accountGiven.password}</b><br><br>
+
+            ⚠️ Vui lòng lưu lại thông tin tài khoản.
+          </div>
+        `;
+      }
+
+
+      /* ============================================
+         100 ĐIỂM -> VÉ 50% + 1 ACC VIP
+         ============================================ */
+      else if (reward.id === 'vip100') {
+
+        const availableVip =
+          getAvailableAccountsPatch(true);
+
+        if (!availableVip.length) {
+          alert(
+            '⚠️ Kho hiện không còn acc VIP khả dụng để cấp thưởng.'
+          );
+          return;
+        }
+
+        const chosen =
+          availableVip[
+            Math.floor(
+              Math.random() * availableVip.length
+            )
+          ];
+
+        usedAccounts.add(chosen.uniqueId);
+
+        saveUsedAccountsPatch();
+
+        accountGiven = parseAccountPatch(
+          chosen.raw
+        );
+
+        const discountCode =
+          makeDiscountCodePatch(50);
+
+        message = `
+          <div>
+            🎉 <b>ĐỔI QUÀ THÀNH CÔNG</b><br><br>
+
+            🎟️ Vé giảm giá:
+            <b>50%</b><br>
+
+            🎫 Mã vé:
+            <b>${discountCode}</b><br><br>
+
+            👑 Acc VIP:
+            <b>${chosen.packName}</b><br>
+
+            👤 Tài khoản:
+            <b>${accountGiven.username}</b><br>
+
+            🔑 Mật khẩu:
+            <b>${accountGiven.password}</b><br><br>
+
+            ⚠️ Vui lòng lưu lại thông tin tài khoản.
+          </div>
+        `;
+      }
+
+
+      /* ============================================
+         VÉ 10% / 20%
+         ============================================ */
+      else if (reward.kind === 'discount') {
+
+        const discount =
+          Number(reward.discount || 0);
+
+        const code =
+          makeDiscountCodePatch(discount);
+
+        message = `
+          🎟️ Bạn nhận được
+          <b>Vé giảm giá ${discount}%</b><br><br>
+
+          🎫 Mã vé:
+          <b>${code}</b>
+        `;
+      }
+
+
+      /* ============================================
+         FALLBACK
+         ============================================ */
+      else {
+
+        message = `
+          🎁 Yêu cầu đổi quà đã được Admin duyệt.<br>
+          Phần thưởng:
+          <b>${reward.title}</b>
+        `;
+      }
+
+
+      /*
+        Lưu thưởng vào Hòm Thư.
+      */
+      addRewardMailPatch({
+        title:
+          `🎁 Đổi Quà Bằng Điểm - ${reward.title}`,
+        message: message,
+        cash: 0
+      });
+
+
+      /*
+        Đánh dấu yêu cầu đã duyệt.
+      */
+      req.status = 'approved';
+      req.approvedAt =
+        new Date().toLocaleString('vi-VN');
+
+      savePointRequests();
+
+
+      /*
+        Cập nhật giao diện Admin + người dùng.
+      */
+      if (
+        typeof renderAdminPointRequests === 'function'
+      ) {
+        renderAdminPointRequests();
+      }
+
+      if (
+        typeof renderPointRequests === 'function'
+      ) {
+        renderPointRequests();
+      }
+
+      if (
+        typeof renderDailyTasks === 'function'
+      ) {
+        renderDailyTasks();
+      }
+
+      if (
+        typeof draw === 'function'
+      ) {
+        draw();
+      }
+
+
+      alert(
+        accountGiven
+          ? '✅ Đã duyệt và cấp phần thưởng vào Hòm Thư.'
+          : '✅ Đã duyệt yêu cầu và gửi phần thưởng vào Hòm Thư.'
+      );
+
+    } catch (error) {
+
+      console.error(
+        'approvePointRequest patch error:',
+        error
+      );
+
+      alert(
+        '❌ Có lỗi khi duyệt yêu cầu. Xem Console để kiểm tra.'
+      );
+    }
+  };
+
+
+  /* =========================================================
+     KHỞI TẠO
+     ========================================================= */
+
+  console.log(
+    '✅ TUNA PATCH đã được kích hoạt: Vòng quay + Đổi điểm.'
+  );
+
+})();
+</script>
 <body>
 
   <nav>
