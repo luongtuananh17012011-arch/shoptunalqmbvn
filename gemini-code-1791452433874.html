@@ -1,0 +1,3577 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<!-- Cấu hình chuẩn Responsive cho điện thoại di động -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>SHOP ACC GAME - HỆ THỐNG GIAO DỊCH TỰ ĐỘNG</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+  
+  html, body {
+    width: 100%;
+    overflow-x: hidden; /* Tránh vỡ khung/cuộn ngang trên điện thoại */
+  }
+
+  body {
+    background-color: #1a2238;
+    color: #f1f5f9;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+  }
+  nav {
+    background: rgba(26, 34, 56, 0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid #334155;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 28px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+  .nav-menu {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #cbd5e1;
+  }
+  .nav-menu a {
+    text-decoration: none;
+    color: #cbd5e1;
+    transition: color 0.2s;
+    cursor: pointer;
+  }
+  .nav-menu a:hover, .nav-menu a.active {
+    color: #fb7185;
+  }
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .online-badge {
+    background: rgba(16, 185, 129, 0.2);
+    color: #34d399;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid rgba(16, 185, 129, 0.4);
+  }
+  .online-dot {
+    width: 8px;
+    height: 8px;
+    background: #10b981;
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+  }
+  @keyframes pulse {
+    0% { transform: scale(0.95); opacity: 0.8; }
+    50% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(0.95); opacity: 0.8; }
+  }
+
+  .vip-badge-tag {
+    background: linear-gradient(135deg, #fbbf24, #d97706, #f59e0b);
+    color: #fff;
+    padding: 7px 16px;
+    border-radius: 25px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    box-shadow: 0 0 15px rgba(251, 191, 36, 0.6), inset 0 0 10px rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    border: 1.5px solid #fff;
+    transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .vip-badge-tag:hover { 
+    transform: scale(1.05); 
+    box-shadow: 0 0 25px rgba(251, 191, 36, 0.9);
+  }
+  .vip-badge-tag::before, .vip-badge-tag::after {
+    content: '🕊️';
+    font-size: 0.85rem;
+    animation: wingFloat 2s ease-in-out infinite alternate;
+  }
+  @keyframes wingFloat {
+    0% { transform: translateY(0px) rotate(0deg); }
+    100% { transform: translateY(-3px) rotate(5deg); }
+  }
+
+  .btn-topup {
+    background: linear-gradient(135deg, #f43f5e, #be185d);
+    color: #fff;
+    padding: 7px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 4px 12px rgba(244, 63, 94, 0.4);
+    transition: transform 0.2s;
+  }
+  .btn-topup:hover { transform: translateY(-2px); }
+
+  main {
+    max-width: 1150px;
+    margin: 24px auto;
+    padding: 0 15px;
+  }
+
+  .event-banner {
+    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    color: white;
+    padding: 12px 18px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: none;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+  }
+
+  #shop-locked-overlay {
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid #ef4444;
+    color: #fca5a5;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    display: none;
+  }
+
+  .category-box {
+    background: #24304f;
+    border: 1px solid #475569;
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 24px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  }
+  .category-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #475569;
+    padding-bottom: 12px;
+    margin-bottom: 20px;
+  }
+  .category-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #f8fafc;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 18px;
+  }
+  .product-card {
+    background: #1e293b;
+    border: 1px solid #475569;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+  }
+  .product-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(244, 63, 94, 0.3);
+    border-color: #f43f5e;
+  }
+  .product-img {
+    height: 130px;
+    background: linear-gradient(135deg, #334155, #1e293b);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #f8fafc;
+    font-weight: 800;
+    text-align: center;
+    padding: 12px;
+    font-size: 1.05rem;
+    position: relative;
+    border-bottom: 1px solid #475569;
+    overflow: hidden;
+  }
+  .badge-tag {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #fff;
+    font-size: 0.7rem;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-weight: 800;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    z-index: 2;
+  }
+  .sale-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: #fff;
+    font-size: 0.7rem;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-weight: 800;
+    animation: blink 1s infinite;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    z-index: 2;
+  }
+  @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+
+  .product-body {
+    padding: 14px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .product-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #f8fafc;
+    margin: 0 0 6px 0;
+    line-height: 1.4;
+  }
+  .product-stock {
+    font-size: 0.8rem;
+    color: #cbd5e1;
+    margin-bottom: 8px;
+  }
+  .product-price-box {
+    margin-bottom: 12px;
+  }
+  .product-price {
+    color: #fb7185;
+    font-weight: 800;
+    font-size: 1.1rem;
+  }
+  .product-old-price {
+    text-decoration: line-through;
+    color: #94a3b8;
+    font-size: 0.8rem;
+    margin-right: 8px;
+  }
+  .lucky-input-box {
+    background: rgba(251, 191, 36, 0.15);
+    border: 1px solid rgba(251, 191, 36, 0.4);
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 12px;
+    text-align: left;
+  }
+  .lucky-input-box label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #fde68a;
+    display: block;
+    margin-bottom: 6px;
+  }
+  .lucky-input-box input {
+    margin-bottom: 0 !important;
+    padding: 7px 10px !important;
+    font-size: 0.85rem !important;
+    background: #1e293b !important;
+    border-color: #f59e0b !important;
+    color: #fff !important;
+  }
+  .btn-buy {
+    width: 100%;
+    background: linear-gradient(135deg, #f43f5e, #e11d48);
+    color: white;
+    border: none;
+    padding: 9px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-transform: uppercase;
+    box-shadow: 0 4px 12px rgba(244, 63, 94, 0.4);
+    transition: all 0.2s;
+  }
+  .btn-buy:hover { background: linear-gradient(135deg, #e11d48, #be123c); transform: translateY(-1px); }
+  .btn-buy:disabled { background: #64748b; box-shadow: none; cursor: not-allowed; transform: none; }
+
+  .vip-gift-box {
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.25), rgba(217, 119, 6, 0.3));
+    border: 1.5px solid #fbbf24;
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 24px;
+    box-shadow: 0 10px 30px rgba(251, 191, 36, 0.25);
+  }
+
+  .panel-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 20px;
+  }
+  @media(max-width: 768px) {
+    .panel-container { grid-template-columns: 1fr; }
+  }
+  .panel-box {
+    background: #24304f;
+    border: 1px solid #475569;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  }
+  .panel-title {
+    font-size: 1rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #f8fafc;
+    margin-bottom: 16px;
+    letter-spacing: 0.5px;
+  }
+  input, select, textarea {
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid #475569;
+    background: #1e293b;
+    color: #fff;
+    font-size: 0.9rem;
+    outline: none;
+    width: 100%;
+    margin-bottom: 12px;
+    transition: border-color 0.2s;
+  }
+  input:focus, select:focus, textarea:focus { border-color: #f43f5e; }
+  .btn-primary {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 0.9rem;
+    width: 100%;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    transition: transform 0.2s;
+  }
+  .btn-primary:hover { transform: translateY(-1px); }
+  .btn-primary:disabled { background: #64748b; box-shadow: none; cursor: not-allowed; transform: none; }
+
+  #result, #lookup-result, #transfer-result {
+    margin-top: 12px;
+    padding: 14px;
+    border-radius: 8px;
+    background: rgba(6, 95, 70, 0.3);
+    border: 1px solid #10b981;
+    display: none;
+    font-size: 0.9rem;
+  }
+  #notice, #lookup-notice, #transfer-notice {
+    color: #fca5a5;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-top: 8px;
+  }
+
+  ul.history-list {
+    padding-left: 0;
+    list-style: none;
+    margin: 0;
+    max-height: 160px;
+    overflow-y: auto;
+    font-size: 0.85rem;
+  }
+  ul.history-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid #475569;
+    display: flex;
+    justify-content: space-between;
+    color: #cbd5e1;
+  }
+
+  
+.vip-name-badge{display:inline-block;margin-left:6px;padding:2px 7px;border-radius:999px;background:#fbbf24;color:#111827;font-size:11px;font-weight:900;box-shadow:0 0 8px rgba(251,191,36,.45);vertical-align:middle;}
+.top-name-badge{display:inline-block;margin-left:6px;padding:2px 7px;border-radius:999px;background:#fbbf24;color:#111827;font-size:11px;font-weight:900;box-shadow:0 0 9px rgba(251,191,36,.55);vertical-align:middle;}
+.admin-name-badge{display:inline-block;margin-left:6px;padding:2px 7px;border-radius:999px;background:#ef4444;color:#fff;font-size:11px;font-weight:900;box-shadow:0 0 8px rgba(239,68,68,.45);vertical-align:middle;}
+.bxh-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    margin-top: 10px;
+  }
+  .bxh-table th, .bxh-table td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid #475569;
+  }
+  .bxh-table th {
+    color: #94a3b8;
+    font-weight: 700;
+    background: #1e293b;
+  }
+  .bxh-table tr:hover {
+    background: rgba(71, 85, 105, 0.2);
+  }
+
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(15, 23, 42, 0.85);
+    display: none; 
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(8px);
+  }
+  .modal-content {
+    background: #24304f;
+    border: 1.5px solid #475569;
+    width: 90%;
+    max-width: 480px;
+    border-radius: 16px;
+    padding: 28px;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+  }
+  .modal-title {
+    color: #34d399;
+    font-size: 1.35rem;
+    font-weight: 800;
+    margin-top: 0;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .modal-subtitle {
+    color: #cbd5e1;
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+  }
+  .modal-details {
+    background: #1e293b;
+    border: 1px dashed #64748b;
+    padding: 18px;
+    border-radius: 10px;
+    text-align: left;
+    margin-bottom: 24px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #f1f5f9;
+  }
+  .modal-details b { color: #fb7185; }
+  .btn-close-modal {
+    background: linear-gradient(135deg, #f43f5e, #e11d48);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 800;
+    cursor: pointer;
+    font-size: 0.95rem;
+    width: 100%;
+    text-transform: uppercase;
+    box-shadow: 0 4px 15px rgba(244, 63, 94, 0.4);
+    transition: transform 0.2s;
+  }
+  .btn-close-modal:hover { transform: translateY(-1px); }
+
+  #admin-section { display: none; }
+  .admin-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+  @media(max-width: 768px) {
+    .admin-stats { grid-template-columns: 1fr; }
+  }
+  .stat-card {
+    background: #1e293b;
+    border: 1px solid #475569;
+    border-radius: 10px;
+    padding: 14px;
+    text-align: center;
+  }
+  .stat-card .num {
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: #60a5fa;
+    margin-top: 6px;
+  }
+
+  .event-toggle-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #475569;
+    font-size: 0.9rem;
+  }
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 24px;
+  }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider {
+    position: absolute; cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #64748b;
+    transition: .3s;
+    border-radius: 24px;
+  }
+  .slider:before {
+    position: absolute; content: "";
+    height: 18px; width: 18px;
+    left: 3px; bottom: 3px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 50%;
+  }
+  input:checked + .slider { background-color: #10b981; }
+  input:checked + .slider:before { transform: translateX(24px); }
+
+  /* ===== MOBILE OPTIMIZATION CSS ===== */
+  @media (max-width: 768px) {
+    nav {
+      position: sticky;
+      top: 0;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .nav-menu {
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px 12px;
+      font-size: 0.8rem;
+      line-height: 1.2;
+    }
+    .nav-menu > span {
+      flex: 0 0 100%;
+      text-align: center;
+      font-size: 1.1rem !important;
+      margin-bottom: 2px;
+    }
+    .nav-menu a {
+      padding: 6px 8px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 6px;
+    }
+    .nav-actions {
+      width: 100%;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+    .vip-badge-tag {
+      padding: 6px 10px;
+      font-size: 0.72rem;
+    }
+    .online-badge, .btn-topup {
+      font-size: 0.76rem;
+      padding: 6px 10px;
+    }
+    main {
+      width: 100%;
+      max-width: 100%;
+      margin: 10px auto;
+      padding: 0 8px;
+    }
+    .category-box, .panel-box, .vip-gift-box {
+      padding: 12px;
+      border-radius: 12px;
+      margin-bottom: 14px;
+    }
+    .category-header {
+      padding-bottom: 9px;
+      margin-bottom: 13px;
+    }
+    .category-title, .panel-title {
+      font-size: 0.92rem;
+      line-height: 1.35;
+    }
+    .product-grid {
+      grid-template-columns: repeat(2, 1fr); /* Đổi thành 2 cột hiển thị sản phẩm trên mobile cực tiện */
+      gap: 10px;
+    }
+    .product-img {
+      height: 95px;
+      font-size: 0.9rem;
+      padding: 6px;
+    }
+    .product-body {
+      padding: 10px;
+    }
+    .product-name {
+      font-size: 0.85rem;
+    }
+    .product-price {
+      font-size: 0.95rem;
+    }
+    .panel-container {
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    input, select, textarea {
+      font-size: 0.9rem;
+      padding: 10px 12px;
+    }
+    .btn-primary, .btn-buy {
+      min-height: 42px;
+      font-size: 0.85rem;
+    }
+    .bxh-table {
+      display: block;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    .bxh-table th, .bxh-table td {
+      padding: 8px 9px;
+    }
+    .modal-content {
+      width: 95%;
+      padding: 20px 15px;
+    }
+  }
+
+</style>
+</head>
+ <script>
+/* =========================================================
+   TUNA SHOP - PATCH
+   1. THÔNG BÁO GIẢI CAO NHẤT VÒNG QUAY
+   2. ADMIN DUYỆT ĐỔI ĐIỂM -> CẤP ACC THẬT TỪ KHO
+   ========================================================= */
+
+(function () {
+  'use strict';
+
+  function moneyPatch(n) {
+    return Number(n || 0).toLocaleString('vi-VN') + 'đ';
+  }
+
+  function getWheelRewardValuePatch(reward) {
+    if (!reward) return 0;
+
+    if (reward.type === 'cash') {
+      return Number(reward.value || 0);
+    }
+
+    if (reward.type === 'acc') {
+      try {
+        const pack = typeof getAllPacks === 'function'
+          ? getAllPacks().find(p => p.key === reward.value)
+          : null;
+
+        return pack ? Number(pack.price || 0) : 0;
+      } catch (e) {
+        return 0;
+      }
+    }
+
+    return 0;
+  }
+
+  function getHighestWheelRewardPatch() {
+    try {
+      if (
+        typeof luckyWheelRewards === 'undefined' ||
+        !Array.isArray(luckyWheelRewards)
+      ) {
+        return null;
+      }
+
+      const valid = luckyWheelRewards.filter(r =>
+        r && Number(r.weight || 0) > 0
+      );
+
+      if (!valid.length) return null;
+
+      return valid.reduce((highest, current) => {
+        return getWheelRewardValuePatch(current) >
+          getWheelRewardValuePatch(highest)
+          ? current
+          : highest;
+      });
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function getWheelRewardLabelPatch(reward) {
+    if (!reward) return 'giải cao nhất';
+
+    if (reward.type === 'cash') {
+      return moneyPatch(reward.value);
+    }
+
+    if (reward.type === 'acc') {
+      try {
+        const pack = typeof getAllPacks === 'function'
+          ? getAllPacks().find(p => p.key === reward.value)
+          : null;
+
+        return pack
+          ? '🎁 ' + pack.name
+          : '🎁 Acc ngẫu nhiên';
+      } catch (e) {
+        return '🎁 Acc ngẫu nhiên';
+      }
+    }
+
+    return reward.value || reward.name || 'Phần thưởng đặc biệt';
+  }
+
+  function createWheelHighestNoticePatch() {
+    let old = document.getElementById('tuna-wheel-highest-notice');
+
+    if (old) old.remove();
+
+    const box = document.createElement('div');
+    box.id = 'tuna-wheel-highest-notice';
+
+    box.innerHTML = `
+      <div style="
+        font-size:12px;
+        color:#fde68a;
+        font-weight:800;
+        margin-bottom:4px;
+      ">
+        🎉 CHÚC MỪNG!
+      </div>
+
+      <div id="tuna-wheel-highest-text"
+        style="
+          font-size:14px;
+          color:#fff;
+          line-height:1.45;
+          font-weight:800;
+        ">
+      </div>
+    `;
+
+    box.style.cssText = `
+      position:fixed;
+      left:50%;
+      top:18px;
+      transform:translateX(-50%);
+      width:min(92vw,430px);
+      z-index:999999;
+      padding:14px 16px;
+      border-radius:14px;
+      background:linear-gradient(
+        135deg,
+        rgba(124,58,237,.97),
+        rgba(30,41,59,.97)
+      );
+      border:1px solid rgba(250,204,21,.75);
+      box-shadow:0 12px 35px rgba(0,0,0,.45);
+      text-align:center;
+      animation:tunaWheelNoticeIn .35s ease;
+    `;
+
+    if (!document.getElementById('tuna-wheel-notice-style')) {
+      const style = document.createElement('style');
+      style.id = 'tuna-wheel-notice-style';
+
+      style.textContent = `
+        @keyframes tunaWheelNoticeIn {
+          from {
+            opacity:0;
+            transform:translate(-50%,-20px);
+          }
+          to {
+            opacity:1;
+            transform:translate(-50%,0);
+          }
+        }
+
+        @keyframes tunaWheelNoticeOut {
+          from {
+            opacity:1;
+            transform:translate(-50%,0);
+          }
+          to {
+            opacity:0;
+            transform:translate(-50%,-20px);
+          }
+        }
+      `;
+
+      document.head.appendChild(style);
+    }
+
+    document.body.appendChild(box);
+
+    return box;
+  }
+
+  function showWheelHighestNoticePatch() {
+    const highest = getHighestWheelRewardPatch();
+
+    if (!highest) return;
+
+    const highestValue = getWheelRewardValuePatch(highest);
+
+    if (
+      typeof rewardMailbox === 'undefined' ||
+      !Array.isArray(rewardMailbox) ||
+      !rewardMailbox.length
+    ) {
+      return;
+    }
+
+    const wheelMail = rewardMailbox.find(mail =>
+      mail &&
+      String(mail.title || '').includes('Vòng Quay May Mắn')
+    );
+
+    if (!wheelMail) return;
+
+    const noticeKey =
+      String(wheelMail.time || '') +
+      '|' +
+      String(wheelMail.message || '');
+
+    const lastNotice =
+      localStorage.getItem('tuna_last_wheel_highest_notice') || '';
+
+    if (noticeKey === lastNotice) return;
+
+    let resultValue = Number(wheelMail.cash || 0);
+
+    if (!resultValue) {
+      const text = String(wheelMail.message || '');
+
+      try {
+        if (typeof getAllPacks === 'function') {
+          const pack = getAllPacks().find(p =>
+            text.includes(p.name)
+          );
+
+          if (pack) {
+            resultValue = Number(pack.price || 0);
+          }
+        }
+      } catch (e) {}
+    }
+
+    if (resultValue < highestValue) return;
+
+    localStorage.setItem(
+      'tuna_last_wheel_highest_notice',
+      noticeKey
+    );
+
+    const box = createWheelHighestNoticePatch();
+    const textBox =
+      document.getElementById('tuna-wheel-highest-text');
+
+    if (textBox) {
+      textBox.innerHTML = `
+        Có người vừa trúng
+        <span style="color:#fde047;">
+          ${getWheelRewardLabelPatch(highest)}
+        </span>
+        — <span style="color:#facc15;">
+          GIẢI CAO NHẤT VÒNG QUAY 🎡
+        </span>
+      `;
+    }
+
+    setTimeout(() => {
+      if (!box || !box.parentNode) return;
+
+      box.style.animation =
+        'tunaWheelNoticeOut .35s ease forwards';
+
+      setTimeout(() => {
+        if (box.parentNode) box.remove();
+      }, 400);
+    }, 60000);
+  }
+
+  let lastWheelMailboxLength = 0;
+
+  setInterval(() => {
+    try {
+      if (
+        typeof rewardMailbox !== 'undefined' &&
+        Array.isArray(rewardMailbox)
+      ) {
+        if (rewardMailbox.length !== lastWheelMailboxLength) {
+          lastWheelMailboxLength = rewardMailbox.length;
+
+          setTimeout(() => {
+            showWheelHighestNoticePatch();
+          }, 300);
+        }
+      }
+    } catch (e) {}
+  }, 1000);
+
+
+  /* =========================================================
+     PHẦN 2: ADMIN DUYỆT ĐỔI ĐIỂM -> CẤP ACC
+     ========================================================= */
+
+  function getAvailableAccountsPatch(onlyVip) {
+    const result = [];
+
+    try {
+      if (typeof getAllPacks !== 'function') return result;
+      if (typeof getPackAccounts !== 'function') return result;
+      if (typeof usedAccounts === 'undefined') return result;
+
+      const packs = getAllPacks();
+
+      packs.forEach(pack => {
+        const accounts = getPackAccounts(pack.key);
+
+        accounts.forEach(acc => {
+          const isVip = String(acc).endsWith(':vip');
+          const raw = isVip
+            ? String(acc).slice(0, -4)
+            : String(acc);
+
+          const uniqueId = `${pack.key}_${raw}`;
+
+          if (usedAccounts.has(uniqueId)) return;
+
+          if (onlyVip && !isVip) return;
+
+          result.push({
+            packKey: pack.key,
+            packName: pack.name,
+            price: Number(pack.price || 0),
+            raw: raw,
+            uniqueId: uniqueId,
+            isVip: isVip
+          });
+        });
+      });
+    } catch (e) {
+      console.error(
+        'Lỗi tìm acc đổi điểm:',
+        e
+      );
+    }
+
+    return result;
+  }
+
+  function saveUsedAccountsPatch() {
+    try {
+      if (typeof usedAccounts !== 'undefined') {
+        localStorage.setItem(
+          'shop_used',
+          JSON.stringify([...usedAccounts])
+        );
+      }
+
+      if (typeof saveData === 'function') {
+        saveData();
+      }
+    } catch (e) {
+      console.error(
+        'Không lưu được acc đã cấp:',
+        e
+      );
+    }
+  }
+
+  function parseAccountPatch(raw) {
+    const parts = String(raw || '').split(':');
+
+    return {
+      username: parts.shift() || '',
+      password: parts.join(':') || ''
+    };
+  }
+
+  function makeDiscountCodePatch(percent) {
+    return (
+      'POINT' +
+      String(percent) +
+      '-' +
+      Date.now().toString().slice(-8) +
+      '-' +
+      Math.floor(100 + Math.random() * 900)
+    );
+  }
+
+  function addRewardMailPatch(data) {
+    if (
+      typeof rewardMailbox === 'undefined' ||
+      !Array.isArray(rewardMailbox)
+    ) {
+      return;
+    }
+
+    rewardMailbox.unshift({
+      title: data.title || '🎁 Phần Thưởng',
+      message: data.message || '',
+      cash: Number(data.cash || 0),
+      opened: false,
+      time: new Date().toLocaleString('vi-VN')
+    });
+
+    if (typeof saveRewardMailbox === 'function') {
+      saveRewardMailbox();
+    }
+
+    if (typeof renderRewardMailbox === 'function') {
+      renderRewardMailbox();
+    }
+  }
+
+  window.approvePointRequest = function(reqId) {
+
+    try {
+
+      if (
+        typeof pointRequests === 'undefined' ||
+        !Array.isArray(pointRequests)
+      ) {
+        alert('Không tìm thấy danh sách yêu cầu đổi điểm.');
+        return;
+      }
+
+      const req =
+        pointRequests.find(x => x.id === reqId);
+
+      if (!req || req.status !== 'pending') {
+        return;
+      }
+
+      const reward =
+        typeof POINT_REWARDS !== 'undefined'
+          ? POINT_REWARDS.find(
+              x => x.id === req.rewardId
+            )
+          : null;
+
+      if (!reward) {
+        alert('Không tìm thấy phần thưởng.');
+        return;
+      }
+
+      let message = '';
+      let accountGiven = null;
+
+      if (reward.id === 'acc50') {
+
+        const available =
+          getAvailableAccountsPatch(false);
+
+        if (!available.length) {
+          alert(
+            '⚠️ Kho hiện không còn acc khả dụng để cấp thưởng.'
+          );
+          return;
+        }
+
+        const chosen =
+          available[
+            Math.floor(
+              Math.random() * available.length
+            )
+          ];
+
+        usedAccounts.add(chosen.uniqueId);
+
+        saveUsedAccountsPatch();
+
+        accountGiven = parseAccountPatch(
+          chosen.raw
+        );
+
+        message = `
+          <div>
+            🎉 <b>ĐỔI QUÀ THÀNH CÔNG</b><br><br>
+
+            🎁 Phần thưởng:
+            <b>1 Acc ngẫu nhiên</b><br>
+
+            📦 Gói:
+            <b>${chosen.packName}</b><br><br>
+
+            👤 Tài khoản:
+            <b>${accountGiven.username}</b><br>
+
+            🔑 Mật khẩu:
+            <b>${accountGiven.password}</b><br><br>
+
+            ⚠️ Vui lòng lưu lại thông tin tài khoản.
+          </div>
+        `;
+      }
+      else if (reward.id === 'vip100') {
+
+        const availableVip =
+          getAvailableAccountsPatch(true);
+
+        if (!availableVip.length) {
+          alert(
+            '⚠️ Kho hiện không còn acc VIP khả dụng để cấp thưởng.'
+          );
+          return;
+        }
+
+        const chosen =
+          availableVip[
+            Math.floor(
+              Math.random() * availableVip.length
+            )
+          ];
+
+        usedAccounts.add(chosen.uniqueId);
+
+        saveUsedAccountsPatch();
+
+        accountGiven = parseAccountPatch(
+          chosen.raw
+        );
+
+        const discountCode =
+          makeDiscountCodePatch(50);
+
+        message = `
+          <div>
+            🎉 <b>ĐỔI QUÀ THÀNH CÔNG</b><br><br>
+
+            🎟️ Vé giảm giá:
+            <b>50%</b><br>
+
+            🎫 Mã vé:
+            <b>${discountCode}</b><br><br>
+
+            👑 Acc VIP:
+            <b>${chosen.packName}</b><br>
+
+            👤 Tài khoản:
+            <b>${accountGiven.username}</b><br>
+
+            🔑 Mật khẩu:
+            <b>${accountGiven.password}</b><br><br>
+
+            ⚠️ Vui lòng lưu lại thông tin tài khoản.
+          </div>
+        `;
+      }
+      else if (reward.kind === 'discount') {
+
+        const discount =
+          Number(reward.discount || 0);
+
+        const code =
+          makeDiscountCodePatch(discount);
+
+        message = `
+          🎟️ Bạn nhận được
+          <b>Vé giảm giá ${discount}%</b><br><br>
+
+          🎫 Mã vé:
+          <b>${code}</b>
+        `;
+      }
+      else {
+
+        message = `
+          🎁 Yêu cầu đổi quà đã được Admin duyệt.<br>
+          Phần thưởng:
+          <b>${reward.title}</b>
+        `;
+      }
+
+      addRewardMailPatch({
+        title:
+          `🎁 Đổi Quà Bằng Điểm - ${reward.title}`,
+        message: message,
+        cash: 0
+      });
+
+      req.status = 'approved';
+      req.approvedAt =
+        new Date().toLocaleString('vi-VN');
+
+      savePointRequests();
+
+      if (
+        typeof renderAdminPointRequests === 'function'
+      ) {
+        renderAdminPointRequests();
+      }
+
+      if (
+        typeof renderPointRequests === 'function'
+      ) {
+        renderPointRequests();
+      }
+
+      if (
+        typeof renderDailyTasks === 'function'
+      ) {
+        renderDailyTasks();
+      }
+
+      if (
+        typeof draw === 'function'
+      ) {
+        draw();
+      }
+
+      alert(
+        accountGiven
+          ? '✅ Đã duyệt và cấp phần thưởng vào Hòm Thư.'
+          : '✅ Đã duyệt yêu cầu và gửi phần thưởng vào Hòm Thư.'
+      );
+
+    } catch (error) {
+
+      console.error(
+        'approvePointRequest patch error:',
+        error
+      );
+
+      alert(
+        '❌ Có lỗi khi duyệt yêu cầu. Xem Console để kiểm tra.'
+      );
+    }
+  };
+
+  console.log(
+    '✅ TUNA PATCH đã được kích hoạt: Vòng quay + Đổi điểm.'
+  );
+
+})();
+</script>
+<body>
+
+  <nav>
+    <div class="nav-menu">
+      <span style="font-weight: 800; color: #fb7185; font-size: 1.2rem; letter-spacing: 0.5px;">🎮 SHOPGAME.VN</span>
+      <a href="#" onclick="switchTab('shop')" id="nav-shop" class="active">Trang Chủ</a>
+      <a href="#" onclick="switchTab('bxh')" id="nav-bxh">🏆 Bảng Xếp Hạng & Đua Top</a>
+      <a href="#" onclick="switchTab('wheel')" id="nav-wheel">🎡 Vòng Quay May Mắn</a>
+      <a href="#" onclick="switchTab('tasks')" id="nav-tasks">🎯 Nhiệm Vụ & Đổi Quà</a>
+      
+    </div>
+    <div class="nav-actions">
+      <div id="vip-badge-container"></div>
+      <div class="online-badge">
+        <div class="online-dot"></div>
+        <span>Online: <b id="online-count">342</b></span>
+      </div>
+      <button class="btn-topup" onclick="scrollToTopup()">💳 Nạp Tiền</button>
+      <div style="display: flex; flex-direction: column; text-align: right; font-size: 0.85rem;">
+        <span id="balance-badge" style="font-weight: 800; color: #34d399;">1.000.000đ</span>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <!-- SHOP SECTION -->
+    <div id="shop-section">
+      <div id="shop-locked-overlay">
+        🔒 HỆ THỐNG ĐANG BẢO TRÌ / TẠM KHÓA SHOP. VUI LÒNG QUAY LẠI SAU!
+      </div>
+
+      <div id="client-event-banner" class="event-banner">
+        <span>🔥 ĐANG CÓ SỰ KIỆN KHUYẾN MÃI: <span id="active-event-text"></span></span>
+      </div>
+
+      <div id="vip-gift-section" class="vip-gift-box" style="display: none;">
+        <div class="category-header" style="border-bottom-color: #fbbf24;">
+          <span class="category-title" style="color: #fde68a;">🎁 Quà Tặng Tài Khoản Miễn Phí (Đặc quyền VIP 7 & VIP 8)</span>
+        </div>
+        <div style="font-size: 0.9rem; color: #fef08a; line-height: 1.6; margin-bottom: 14px;">
+          Là thành viên cấp độ cao cấp, mỗi ngày bạn được nhận miễn phí **1 tài khoản bất kỳ** vào mục nhận quà dưới đây!
+        </div>
+        <button id="btn-claim-vip-gift" class="btn-primary" style="background: linear-gradient(135deg, #f59e0b, #d97706); box-shadow: 0 4px 15px rgba(245,158,11,0.5);" onclick="claimVipDailyGift()">Nhận 1 Acc Miễn Phí Ngày Hôm Nay</button>
+        <div id="vip-gift-notice" style="font-size: 0.85rem; margin-top: 10px; font-weight: 600;"></div>
+      </div>
+
+      <!-- KHU VỰC NHẬN ACC MIỄN PHÍ TỪ CODE TẶNG ACC -->
+      <section class="category-box" style="border: 2px dashed #34d399; background: rgba(16, 185, 129, 0.08);">
+        <div class="category-header" style="border-bottom-color: #34d399;">
+          <span class="category-title" style="color: #34d399;">🎁 Nhận Acc Miễn Phí Từ Mã Code Tặng Acc</span>
+        </div>
+        <p style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 14px;">
+          Bạn có mã code nhận acc miễn phí do Admin phát hành? Nhập mã vào bên dưới để nhận ngay thông tin tài khoản nhé!
+        </p>
+        <div style="max-width: 500px; display: flex; gap: 10px;">
+          <input id="free-acc-code-input" type="text" placeholder="Nhập mã code tặng acc (VD: TANGACC...)" style="margin-bottom: 0; text-transform: uppercase;">
+          <button class="btn-primary" onclick="claimFreeAccCode()" style="background: linear-gradient(135deg, #10b981, #059669); width: auto; white-space: nowrap;">Nhận Ngay</button>
+        </div>
+        <div id="free-acc-notice" style="font-size: 0.85rem; margin-top: 10px; font-weight: 600;"></div>
+      </section>
+
+      <section class="category-box">
+        <div class="category-header">
+          <span class="category-title">🔥 Kho Túi Mù & Flash Sale Giảm Giá</span>
+        </div>
+        <div id="packs-container" class="product-grid"></div>
+      </section>
+
+      <div class="panel-container">
+        <div class="panel-box" id="topup-section">
+          <div class="panel-title">Nạp Tiền Vào Tài Khoản</div>
+          <div id="topup-form-area">
+            <input id="amount" type="number" placeholder="Nhập số tiền cần nạp (VNĐ)...">
+            <button id="btn-topup-action" class="btn-primary" onclick="createTopupRequest()">Tạo Lệnh Nạp Tiền</button>
+          </div>
+          
+          <div id="topup-qr-area" style="display: none; background: #1e293b; border: 1px solid #475569; padding: 16px; border-radius: 10px; margin-bottom: 12px;">
+            <div style="font-size: 0.9rem; line-height: 1.6; color: #f1f5f9;">
+              <b>Thông tin chuyển khoản:</b><br>
+              Ngân hàng: <b>MB Bank</b><br>
+              STK: <b style="color: #60a5fa;">0383369912</b><br>
+              Chủ TK: <b>LUONG TUAN ANH</b><br>
+              Số tiền: <b style="color: #fb7185;" id="qr-amount">0đ</b><br>
+              Nội dung CK: <b style="color: #1e293b; background: #fef08a; padding: 2px 6px; border-radius: 4px;" id="qr-code">NAP123</b>
+            </div>
+            <button id="btn-paid" class="btn-primary" style="margin-top: 14px; background: linear-gradient(135deg, #059669, #047857); box-shadow: 0 4px 15px rgba(5,150,105,0.4);" onclick="confirmPaid()">Tôi Đã Chuyển Tiền</button>
+          </div>
+
+          <div style="margin-top: 15px;">
+            <div class="panel-title">Trạng Thái Giao Dịch Gần Nhất</div>
+            <div id="result"></div>
+            <div id="notice"></div>
+          </div>
+        </div>
+
+        <div class="panel-box">
+          <div class="panel-title">Tra Cứu Đơn Hàng / Tài Khoản Đã Mua</div>
+          <input id="lookup-code" type="text" placeholder="Nhập mã tham chiếu (VD: TUI29-001)...">
+          <button class="btn-primary" onclick="lookupOrder()" style="background: linear-gradient(135deg, #059669, #047857); box-shadow: 0 4px 15px rgba(5,150,105,0.4);">Kiểm Tra Ngay</button>
+          <div id="lookup-result"></div>
+          <div id="lookup-notice"></div>
+        </div>
+      </div>
+
+      <div class="category-box" style="margin-top: 24px;">
+        <div class="category-header">
+          <span class="category-title">💸 Chuyển Số Dư Cho Thành Viên Khác</span>
+        </div>
+        <div style="max-width: 500px;">
+          <input id="transfer-username" type="text" placeholder="Tên tài khoản hoặc ID người nhận (VD: user_xyz)...">
+          <input id="transfer-amount" type="number" placeholder="Số tiền muốn chuyển (VNĐ)...">
+          <button class="btn-primary" onclick="transferMoney()" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);">Thực Hiện Chuyển Tiền</button>
+          <div id="transfer-result"></div>
+          <div id="transfer-notice"></div>
+        </div>
+      </div>
+
+      <div class="category-box" style="margin-top: 24px;">
+        <div class="category-header">
+          <span class="category-title">🎁 Nhập Giftcode Nhận Thưởng</span>
+        </div>
+        <div style="max-width: 500px;">
+          <input id="giftcode-input" type="text" placeholder="Nhập mã giftcode..." maxlength="40" style="text-transform: uppercase;">
+          <button class="btn-primary" onclick="redeemGiftCode()" style="background: linear-gradient(135deg, #f59e0b, #d97706);">Đổi Giftcode</button>
+          <div id="giftcode-notice" style="font-size: 0.85rem; margin-top: 8px; font-weight: 600;"></div>
+        </div>
+      </div>
+
+      <section class="category-box" style="margin-top: 24px;">
+        <div class="category-header">
+          <span class="category-title">📜 Nhật Ký Giao Dịch Gần Đây</span>
+        </div>
+        <ul class="history-list" id="history">
+          <li><span style="color: #94a3b8;">Chưa có lịch sử giao dịch phát sinh.</span></li>
+        </ul>
+      </section>
+    </div>
+
+    <!-- VÒNG QUAY MAY MẮN -->
+    <div id="wheel-section" style="display:none;">
+      <section class="category-box" style="background:linear-gradient(135deg,#24163b,#1e293b); border:1.5px solid #a855f7;">
+        <div class="category-header" style="border-bottom-color:#a855f7;">
+          <span class="category-title" style="color:#d8b4fe;">🎡 VÒNG QUAY MAY MẮN</span>
+        </div>
+        <p style="font-size:.9rem;color:#cbd5e1;line-height:1.6;margin-bottom:14px;">
+          Giá mỗi lượt quay: <b style="color:#fbbf24;">20.000đ</b>. Phần thưởng trúng được gửi thẳng vào <b>Hòm Thư</b>.
+        </p>
+        <div id="wheel-prize-preview" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:18px;"></div>
+        <div style="display:flex;justify-content:center;align-items:center;flex-direction:column;gap:14px;">
+          <div style="position:relative;width:min(330px,82vw);aspect-ratio:1/1;">
+            <div style="position:absolute;left:50%;top:-2px;transform:translateX(-50%);z-index:5;width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-top:30px solid #fbbf24;filter:drop-shadow(0 2px 4px rgba(0,0,0,.4));"></div>
+            <div id="lucky-wheel" style="width:100%;height:100%;border-radius:50%;border:8px solid #f8fafc;box-shadow:0 0 0 5px #7e22ce,0 10px 35px rgba(0,0,0,.4);background:conic-gradient(#f97316 0deg 45deg,#eab308 45deg 90deg,#22c55e 90deg 135deg,#06b6d4 135deg 180deg,#3b82f6 180deg 225deg,#8b5cf6 225deg 270deg,#ec4899 270deg 315deg,#ef4444 315deg 360deg);position:relative;transition:transform 4.5s cubic-bezier(.12,.75,.16,1);overflow:hidden;">
+              <div style="position:absolute;inset:28%;border-radius:50%;background:#111827;border:5px solid #fbbf24;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:16px;text-align:center;z-index:2;">20K<br><span style="font-size:10px;opacity:.8;">/ LƯỢT</span></div>
+              <div id="wheel-labels"></div>
+            </div>
+          </div>
+          <button id="btn-spin-wheel" class="btn-primary" onclick="spinLuckyWheel()" style="width:min(330px,82vw);background:linear-gradient(135deg,#a855f7,#7c3aed);font-size:1rem;box-shadow:0 5px 20px rgba(168,85,247,.35);">🎯 QUAY NGAY - 20.000đ</button>
+          <div id="wheel-notice" style="font-size:.88rem;font-weight:700;text-align:center;min-height:22px;"></div>
+        </div>
+      </section>
+
+      <section class="category-box" style="margin-top:20px;">
+        <div class="category-header"><span class="category-title">📨 Hòm Thư Phần Thưởng</span></div>
+        <div id="wheel-mailbox-list" style="max-height:320px;overflow-y:auto;"></div>
+      </section>
+    </div>
+
+    <!-- NHIỆM VỤ & ĐỔI QUÀ -->
+    <div id="tasks-section" style="display:none;">
+      <section class="category-box" style="background:linear-gradient(135deg,#172554,#1e293b);border:1.5px solid #38bdf8;">
+        <div class="category-header" style="border-bottom-color:#38bdf8;">
+          <span class="category-title" style="color:#7dd3fc;">🎯 NHIỆM VỤ HẰNG NGÀY</span>
+        </div>
+        <p style="font-size:.9rem;color:#cbd5e1;line-height:1.6;margin-bottom:14px;">Các nhiệm vụ đăng nhập/mua/top/quay chỉ nhận <b>1 lần/ngày</b>. Riêng nhiệm vụ nạp tiền tích lũy: cứ đủ 100.000đ nạp thực tế sẽ nhận 1 điểm, không tự cộng nếu chưa đủ.</p>
+        <div id="daily-task-list" style="display:grid;gap:10px;"></div>
+        <div id="task-notice" style="margin-top:12px;font-weight:700;font-size:.88rem;"></div>
+      </section>
+
+      <section class="category-box" style="margin-top:20px;background:linear-gradient(135deg,#3b0764,#1e293b);border:1.5px solid #c084fc;">
+        <div class="category-header" style="border-bottom-color:#c084fc;">
+          <span class="category-title" style="color:#e9d5ff;">🎁 ĐỔI QUÀ BẰNG ĐIỂM</span>
+          <span style="font-weight:900;color:#fbbf24;">Điểm: <span id="points-balance">0</span></span>
+        </div>
+        <div id="point-reward-list" style="display:grid;gap:10px;"></div>
+        <div id="redeem-notice" style="margin-top:12px;font-weight:700;font-size:.88rem;"></div>
+      </section>
+
+      <section class="category-box" style="margin-top:20px;">
+        <div class="category-header"><span class="category-title">📨 Lịch Sử Yêu Cầu Đổi Quà</span></div>
+        <div id="point-request-list" style="max-height:320px;overflow-y:auto;"></div>
+      </section>
+    </div>
+
+    <!-- BẢNG XẾP HẠNG & ĐUA TOP (BXH) -->
+    <div id="bxh-section" style="display: none;">
+      <div class="category-box" style="background: linear-gradient(135deg, #24304f, #1e293b); border: 1.5px solid #f59e0b;">
+        <div class="category-header">
+          <span class="category-title" style="color: #fbbf24;">🏆 SỰ KIỆN ĐUA TOP NẠP THẺ - NHẬN QUÀ KHỦNG</span>
+        </div>
+        <p style="font-size: 0.9rem; color: #cbd5e1; margin-bottom: 16px; line-height: 1.6;">
+          Bảng xếp hạng tổng hợp các đại gia nạp thẻ cực kỳ kịch tính. Top 1, Top 2, Top 3 sẽ nhận được phần thưởng tiền mặt và tài khoản VIP cực giá trị khi sự kiện tổng kết / reset BXH!
+        </p>
+        
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px;">
+          <div style="background: rgba(251, 191, 36, 0.15); border: 1px solid #fbbf24; border-radius: 10px; padding: 14px; text-align: center;">
+            <div style="color: #fbbf24; font-weight: 800; font-size: 1.1rem;">🥇 TOP 1</div>
+            <div style="font-size: 0.85rem; color: #f1f5f9; margin-top: 6px;">Thưởng: <b>5.000.000đ</b> + 2 Acc 499k ngẫu nhiên trong túi</div>
+          </div>
+          <div style="background: rgba(148, 163, 184, 0.15); border: 1px solid #94a3b8; border-radius: 10px; padding: 14px; text-align: center;">
+            <div style="color: #e2e8f0; font-weight: 800; font-size: 1.1rem;">🥈 TOP 2</div>
+            <div style="font-size: 0.85rem; color: #f1f5f9; margin-top: 6px;">Thưởng: <b>3.000.000đ</b> + 1 Acc 499k</div>
+          </div>
+          <div style="background: rgba(180, 83, 9, 0.15); border: 1px solid #b45309; border-radius: 10px; padding: 14px; text-align: center;">
+            <div style="color: #f59e0b; font-weight: 800; font-size: 1.1rem;">🥉 TOP 3</div>
+            <div style="font-size: 0.85rem; color: #f1f5f9; margin-top: 6px;">Thưởng: <b>1.000.000đ</b> + 1 Acc 199k</div>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <h4 style="color: #34d399; margin-bottom: 10px;">📨 Hòm Thư Nhận Thưởng Đua Top Của Bạn:</h4>
+          <div id="reward-mailbox-list" style="background: #1e293b; border: 1px solid #475569; border-radius: 10px; padding: 12px; max-height: 200px; overflow-y: auto;">
+            <div style="opacity: .7; font-size: 13px;">Hòm thư đang trống.</div>
+          </div>
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table class="bxh-table">
+            <thead>
+              <tr>
+                <th style="width: 80px;">Top</th>
+                <th>Tên Tài Khoản</th>
+                <th>Cấp Độ VIP</th>
+                <th style="text-align: right;">Tổng Nạp Tích Lũy</th>
+              </tr>
+            </thead>
+            <tbody id="bxh-list">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN PANEL SECTION -->
+    <div id="admin-section">
+      <div class="category-box" style="margin-top:24px;">
+        <div class="category-header">
+          <span class="category-title">🔄 Quản Lý Đua Top & Reset BXH Nạp Tiền</span>
+        </div>
+        <p style="font-size:13px;color:#cbd5e1; margin-bottom: 12px;">
+          Chốt sổ sự kiện đua top, reset dữ liệu BXH nạp tiền và tự động gửi phần thưởng vào hòm thư cho Top 1, Top 2, Top 3.
+        </p>
+        <button type="button" onclick="resetBXHDeposits()" style="background:#dc2626;color:#fff;border:0;padding:10px 14px;border-radius:8px;cursor:pointer;font-weight:700;">
+          🔄 Tổng Kết & Reset BXH Nạp Tiền (Phát Thưởng)
+        </button>
+      </div>
+
+      <div class="category-box" style="border:1.5px solid #fbbf24;">
+        <div class="category-header" style="border-bottom-color:#fbbf24;">
+          <span class="category-title" style="color:#fde68a;">🎁 Duyệt Yêu Cầu Đổi Quà Bằng Điểm</span>
+        </div>
+        <p style="font-size:13px;color:#cbd5e1;margin-bottom:10px;">Các yêu cầu đổi <b>Acc ngẫu nhiên</b> hoặc <b>vé giảm giá</b> sẽ vào đây để Admin duyệt. Đây là hệ thống DEMO, Admin duyệt xong mới gửi thưởng vào hòm thư.</p>
+        <div id="admin-point-request-list" style="max-height:360px;overflow-y:auto;border:1px solid #475569;border-radius:8px;padding:8px;background:#1e293b;"></div>
+      </div>
+
+      <div id="admin-login-box" class="panel-box" style="max-width: 420px; margin: 40px auto;">
+        <div class="panel-title" style="text-align: center;">🔐 Đăng Nhập Quản Trị</div>
+        <p style="font-size: 0.85rem; color: #cbd5e1; text-align: center;">Mật khẩu mặc định: <b>admin123</b></p>
+        <input id="admin-pass" type="password" placeholder="Nhập mật khẩu admin...">
+        <button class="btn-primary" onclick="adminLogin()">Truy Cập Admin</button>
+        <div id="admin-login-notice" style="color: #f87171; font-size: 0.85rem; margin-top: 8px; text-align: center;"></div>
+      </div>
+
+      <div id="admin-dashboard" style="display: none;">
+        <div class="category-box">
+          <div class="category-header">
+            <span class="category-title">📊 Thống Kê Hệ Thống & Lợi Nhuận</span>
+            <button class="btn-topup" style="background: #64748b;" onclick="adminLogout()">Đăng Xuất</button>
+          </div>
+          <div class="admin-stats">
+            <div class="stat-card">
+              <div style="font-size: 0.75rem; color: #cbd5e1;">Tổng Đơn Đã Bán</div>
+              <div class="num" id="stat-sold">0</div>
+            </div>
+            <div class="stat-card">
+              <div style="font-size: 0.75rem; color: #cbd5e1;">Tổng Lợi Nhuận</div>
+              <div class="num" id="stat-profit" style="color: #34d399;">0đ</div>
+            </div>
+            <div class="stat-card">
+              <div style="font-size: 0.75rem; color: #cbd5e1;">Đã Rút / Khả dụng</div>
+              <div class="num" id="stat-withdrawn" style="color: #fbbf24;">0đ</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PHẦN CẬP NHẬT: TẠO CODE TẶNG ACC LẤY TỪ KHO RANDOM -->
+        <div class="category-box" style="border: 1.5px solid #10b981;">
+          <div class="category-header" style="border-bottom-color: #10b981;">
+            <span class="category-title" style="color: #34d399;">🎟️ Tạo Mã Code Tặng Acc Miễn Phí Cho Khách (Lấy Từ Kho Random)</span>
+          </div>
+          <div class="panel-container" style="margin-top: 0;">
+            <div>
+              <div style="font-weight: 600; font-size: 0.85rem; margin-bottom: 8px; color: #f1f5f9;">Tạo Mã Tặng Acc Mới</div>
+              <input id="admin-free-code-name" type="text" placeholder="Mã code tặng (VD: TANGACC5K)" style="text-transform: uppercase;">
+              <div style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 4px;">Chọn gói/kho tài khoản nguồn để lấy ngẫu nhiên:</div>
+              <select id="admin-free-code-pack-select" style="margin-bottom: 12px;"></select>
+              <input id="admin-free-code-limit" type="number" placeholder="Số lượt dùng tối đa..." value="10">
+              <button class="btn-primary" onclick="createFreeAccCode()" style="background: linear-gradient(135deg, #10b981, #059669);">Tạo Code Tặng Acc</button>
+              <div id="admin-free-code-notice" style="font-size: 0.85rem; margin-top: 8px; font-weight: 500;"></div>
+            </div>
+            <div>
+              <div style="font-weight: 600; font-size: 0.85rem; margin-bottom: 8px; color: #f1f5f9;">Danh Sách Code Tặng Acc Hiện Có</div>
+              <div id="admin-free-code-list" style="max-height: 220px; overflow-y: auto; border: 1px solid #475569; border-radius: 8px; padding: 8px; background: #1e293b;">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="category-box">
+          <div class="category-header">
+            <span class="category-title">⚡ Cài Đặt Giảm Giá / Flash Sale Hạn Mức</span>
+          </div>
+          <div class="panel-container" style="margin-top: 0;">
+            <div>
+              <div style="font-weight: 600; font-size: 0.85rem; margin-bottom: 8px; color: #f1f5f9;">Kích Hoạt Giảm Giá Cho Túi/Hàng</div>
+              <select id="flash-pack-select"></select>
+              <input id="flash-sale-price" type="number" placeholder="Giá Flash Sale (VNĐ)...">
+              <input id="flash-sale-limit" type="number" placeholder="Số lượng suất giảm giá (VD: 5 suất)...">
+              <div style="display: flex; gap: 10px;">
+                <button class="btn-primary" onclick="setFlashSale()" style="background: linear-gradient(135deg, #ef4444, #dc2626);">Bật Flash Sale</button>
+                <button class="btn-primary" onclick="stopFlashSale()" style="background: #64748b;">Tắt Sale</button>
+              </div>
+              <div id="flash-notice" style="font-size: 0.85rem; margin-top: 8px; font-weight: 500;"></div>
+            </div>
+            <div>
+              <div style="font-weight: 600; font-size: 0.85rem; margin-bottom: 8px; color: #f1f5f9;">Trạng Thái Flash Sale Hiện Tại</div>
+              <div id="flash-status-box" style="border: 1px solid #475569; border-radius: 8px; padding: 14px; background: #1e293b; font-size: 0.85rem; line-height: 1.6; color: #cbd5e1;">
+                Chưa có chương trình Flash Sale nào đang hoạt động.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="category-box">
+          <div class="category-header">
+            <span class="category-title">🎮 Bảng Điều Khiển & Cài Đặt Shop</span>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <div class="event-toggle-item" style="background: rgba(239, 68, 68, 0.15); padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.4);">
+              <span>🔒 <b>Khóa Toàn Bộ Shop</b> (Tạm ngưng không cho khách vào mua hàng)</span>
+              <label class="switch">
+                <input type="checkbox" id="shop-locked-toggle" onchange="toggleShopLock()">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="event-toggle-item">
+              <span>⚡ <b>Sự kiện X2 Nạp Thẻ</b> (Nhân đôi tiền nạp thực tế)</span>
+              <label class="switch">
+                <input type="checkbox" id="ev-x2" onchange="toggleEvent('x2')">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="event-toggle-item">
+              <span>🎁 <b>Sự kiện Thêm 20% Giá Trị Nạp</b> (Tặng thêm 20% tiền nạp)</span>
+              <label class="switch">
+                <input type="checkbox" id="ev-bonus20" onchange="toggleEvent('bonus20')">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="event-toggle-item">
+              <span>💎 <b>Sự kiện Tăng Tỉ Lệ Ra Acc Ngon</b> (Ưu tiên xuất tài khoản VIP/Xịn)</span>
+              <label class="switch">
+                <input type="checkbox" id="ev-accngon" onchange="toggleEvent('accngon')">
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- PHẦN RIÊNG BIỆT: TẠO THỂ LOẠI HÀNG & NHẬP CODE KÈM SỐ LƯỢNG -->
+        <div class="category-box">
+          <div class="category-header">
+            <span class="category-title">🏷️ Quản Lý Thể Loại Hàng & Nhập Code Khi Tạo Mới</span>
+          </div>
+          <div class="panel-container" style="margin-top: 0;">
+            <div>
+              <div style="font-weight: 600; font-size: 0.85rem; margin-bottom: 8px; color: #f1f5f9;">Tạo Thể Loại Hàng & Nhập Code (SL Tự Động Theo SL Code)</div>
+              <input id="new-cat-name" type="text" placeholder="Tên loại hàng (VD: Nick Roblox VIP, Netflix...)">
+              <input id="new-cat-price" type="number" placeholder="Giá bán (VNĐ)...">
+              <input id="new-cat-tag" type="text" placeholder="Nhãn hiển thị (VD: HOT, NEW, GIẢM SỐC)...">
+              <textarea id="new-cat-codes" rows="4" placeholder="Nhập danh sách code/tài khoản (username:password), mỗi dòng 1 code. Số lượng code sẽ quyết định số lượng (sl) mở số của danh mục này!"></textarea>
+              <button class="btn-primary" onclick="adminCreateCategory()" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">Tạo Danh Mục & Thêm Code</button>
+              <div id="new-cat-notice" style="font-size: 0.85rem; margin-top: 8px; font-weight: 500;"></div>
+            </div>
+            <div>
+              <div style="font-weight: 600; font-size: 0.85rem; margin-bottom: 8px; color: #f1f5f9;">Danh Sách Các Thể Loại Đang Có</div>
+              <div id="custom-category-list" style="max-height: 220px; overflow-y: auto; border: 1px solid #475569; border-radius: 8px; padding: 8px; background: #1e293b;">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-container" style="margin-top: 0;">
+          <div class="panel-box">
+            <div class="panel-title">📥 Thêm Tài Khoản Vào Kho</div>
+            <select id="admin-pack-select">
+              <option value="tui29">Túi mù 29k</option>
+              <option value="tui49">Túi mù 49k</option>
+              <option value="tui99">Túi mù 99k</option>
+              <option value="tui199">Túi mù 199k</option>
+              <option value="tui499">Túi mù 499k</option>
+            </select>
+            <textarea id="admin-new-accs" rows="4" placeholder="Định dạng: username:password:vip (thêm chữ 'vip' ở cuối nếu là acc ngon)"></textarea>
+            <button class="btn-primary" onclick="adminAddAccounts()" style="background: linear-gradient(135deg, #059669, #047857);">Thêm Vào Kho</button>
+            <div id="admin-add-notice" style="font-size: 0.85rem; margin-top: 8px; font-weight: 500;"></div>
+          </div>
+
+          <div class="panel-box">
+            <div class="panel-title">💸 Rút Tiền Lợi Nhuận Về Tài Khoản</div>
+            <input id="withdraw-amount" type="number" placeholder="Nhập số tiền muốn rút (VNĐ)...">
+            <input id="withdraw-bank" type="text" placeholder="Ngân hàng & STK nhận (VD: MB - 0383369912)...">
+            <button id="btn-withdraw-action" class="btn-primary" onclick="adminWithdraw()" style="background: linear-gradient(135deg, #d97706, #b45309);">Tạo Lệnh Rút Tiền</button>
+            <div id="withdraw-notice" style="font-size: 0.85rem; margin-top: 8px; font-weight: 500;"></div>
+          </div>
+        </div>
+
+        <div class="panel-container" style="margin-top: 20px;">
+          <div class="panel-box">
+            <div class="panel-title">🔍 Kiểm Tra Tài Khoản Theo Từng Túi / Hàng</div>
+            <select id="inspect-pack-select" onchange="renderInspectList()">
+              <option value="tui29">Túi mù 29k</option>
+              <option value="tui49">Túi mù 49k</option>
+              <option value="tui99">Túi mù 99k</option>
+              <option value="tui199">Túi mù 199k</option>
+              <option value="tui499">Túi mù 499k</option>
+            </select>
+            <div id="inspect-list-container" style="max-height: 220px; overflow-y: auto; margin-top: 10px; border: 1px solid #475569; border-radius: 8px; padding: 8px; background: #1e293b;">
+            </div>
+          </div>
+
+          <div class="panel-box">
+            <div class="panel-title">♻️ Quản Lý / Reset Kho Hàng</div>
+            <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 12px;">Dùng tính năng này để làm mới lại các tài khoản đã bị mua (mở lại toàn bộ kho khi hết acc).</p>
+            <button class="btn-primary" onclick="adminResetStock()" style="background: linear-gradient(135deg, #ef4444, #dc2626); margin-bottom: 15px;">🔄 Reset Toàn Bộ Kho Hàng (Phục Hồi Lại Acc Đã Mua)</button>
+            <div id="reset-notice" style="font-size: 0.85rem; font-weight: 500;"></div>
+          </div>
+        </div>
+
+        <div class="category-box" style="border:1.5px solid #a855f7;">
+          <div class="category-header" style="border-bottom-color:#a855f7;">
+            <span class="category-title" style="color:#d8b4fe;">🎡 Quản Lý Phần Thưởng Vòng Quay</span>
+          </div>
+          <p style="font-size:.84rem;color:#cbd5e1;margin-bottom:12px;">Admin có thể chỉnh 8 ô thưởng. Loại <b>Tiền</b> sẽ cộng vào số dư khi nhận thư; loại <b>Acc</b> sẽ lấy acc ngẫu nhiên từ túi đã chọn; loại <b>Quà chữ</b> chỉ gửi thông báo quà vào hòm thư.</p>
+          <div id="wheel-admin-list" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px;"></div>
+          <button class="btn-primary" onclick="saveLuckyWheelSettings()" style="margin-top:12px;background:linear-gradient(135deg,#a855f7,#7c3aed);">💾 Lưu Phần Thưởng Vòng Quay</button>
+          <div id="wheel-admin-notice" style="font-size:.85rem;margin-top:8px;font-weight:600;"></div>
+        </div>
+
+        <div class="category-box">
+          <div class="category-header">
+            <span class="category-title">🎁 Quản Lý Giftcode</span>
+          </div>
+          <div class="panel-container" style="margin-top: 0;">
+            <div>
+              <div style="font-weight: 600; font-size: 0.85rem; margin-bottom: 8px; color: #f1f5f9;">Tạo Giftcode Mới</div>
+              <input id="admin-giftcode-name" type="text" placeholder="Tên giftcode (VD: WELCOME50K)" maxlength="40" style="text-transform: uppercase;">
+              <input id="admin-giftcode-reward" type="number" placeholder="Số tiền thưởng (VNĐ)...">
+              <input id="admin-giftcode-limit" type="number" placeholder="Số lượt sử dụng tối đa...">
+              <button class="btn-primary" onclick="createGiftCode()" style="background: linear-gradient(135deg, #f59e0b, #d97706);">➕ Tạo Giftcode</button>
+              <button class="btn-primary" onclick="generateGiftCode()" style="margin-top: 8px; background: linear-gradient(135deg, #64748b, #475569);">🔄 Tạo Mã Ngẫu Nhiên</button>
+              <div id="admin-giftcode-notice" style="font-size: 0.85rem; margin-top: 8px; font-weight: 500;"></div>
+            </div>
+            <div>
+              <div style="font-weight: 600; font-size: 0.85rem; margin-bottom: 8px; color: #f1f5f9;">Danh Sách Giftcode</div>
+              <div id="admin-giftcode-list" style="max-height: 260px; overflow-y: auto; border: 1px solid #475569; border-radius: 8px; padding: 8px; background: #1e293b;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-container" style="margin-top: 20px;">
+          <div class="panel-box">
+            <div class="panel-title">📋 Lịch Sử Đơn Hàng Khách Mua</div>
+            <div style="max-height: 200px; overflow-y: auto;" id="admin-orders-list">
+              <p style="font-size: 0.85rem; color: #94a3b8;">Chưa có đơn hàng nào.</p>
+            </div>
+          </div>
+
+          <div class="panel-box">
+            <div class="panel-title">📜 Lịch Sử Rút Tiền Của Admin</div>
+            <div style="max-height: 200px; overflow-y: auto;" id="admin-withdraw-list">
+              <p style="font-size: 0.85rem; color: #94a3b8;">Chưa có lịch sử rút tiền.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- MODAL VIP -->
+  <div id="vip-modal" class="modal-overlay">
+    <div class="modal-content" style="text-align: left;">
+      <h3 class="modal-title" style="text-align: center; color: #fbbf24;">⭐ HỆ THỐNG CẤP ĐỘ & ĐẶC QUYỀN VIP</h3>
+      <div id="vip-modal-body" style="font-size: 0.9rem; line-height: 1.7; color: #e2e8f0; max-height: 320px; overflow-y: auto; margin-bottom: 18px;">
+      </div>
+      <button class="btn-close-modal" onclick="closeVipModal()">Đã Hiểu</button>
+    </div>
+  </div>
+
+  <div id="success-modal" class="modal-overlay">
+    <div class="modal-content">
+      <h3 class="modal-title">🎉 Giao Dịch Thành Công!</h3>
+      <div class="modal-subtitle">Cảm ơn bạn đã ủng hộ, đây là tài khoản của bạn:</div>
+      <div id="modal-details" class="modal-details"></div>
+      <button class="btn-close-modal" onclick="closeModal()">Đóng Cửa Sổ</button>
+    </div>
+  </div>
+
+<script>
+let balance = localStorage.getItem('shop_balance') !== null ? parseInt(localStorage.getItem('shop_balance')) : 1000000;
+let totalDeposited = localStorage.getItem('shop_total_deposited') !== null ? parseInt(localStorage.getItem('shop_total_deposited')) : 1000000;
+let history = localStorage.getItem('shop_history') ? JSON.parse(localStorage.getItem('shop_history')) : [];
+let usedAccounts = localStorage.getItem('shop_used') ? new Set(JSON.parse(localStorage.getItem('shop_used'))) : new Set();
+let purchasedMap = localStorage.getItem('shop_purchased') ? JSON.parse(localStorage.getItem('shop_purchased')) : {};
+let withdrawHistory = localStorage.getItem('shop_withdraw_history') ? JSON.parse(localStorage.getItem('shop_withdraw_history')) : [];
+let isShopLocked = localStorage.getItem('shop_locked') === 'true';
+let lastClaimedDate = localStorage.getItem('shop_last_claimed_date') || '';
+
+let freeAccCodes = localStorage.getItem('shop_free_acc_codes') ? JSON.parse(localStorage.getItem('shop_free_acc_codes')) : [
+  { code: 'TANGACC2026', packKey: 'tui29', maxUses: 5, usedCount: 0 }
+];
+let usedFreeAccCodes = localStorage.getItem('shop_used_free_codes') ? JSON.parse(localStorage.getItem('shop_used_free_codes')) : [];
+
+let flashSaleData = localStorage.getItem('shop_flash_sale') ? JSON.parse(localStorage.getItem('shop_flash_sale')) : {
+  active: false,
+  packKey: '',
+  salePrice: 0,
+  limitCount: 0,
+  soldCount: 0
+};
+
+let events = localStorage.getItem('shop_events') ? JSON.parse(localStorage.getItem('shop_events')) : {
+  x2: false,
+  bonus20: false,
+  accngon: false
+};
+
+const defaultPacksData = [
+  { key: 'tui29', name: 'Túi mù 29k', price: 29000, tag: 'HOT' },
+  { key: 'tui49', name: 'Túi mù 49k', price: 49000, tag: 'SALE' },
+  { key: 'tui99', name: 'Túi mù 99k', price: 99000, tag: 'NEW' },
+  { key: 'tui199', name: 'Túi mù 199k', price: 199000, tag: 'HOT' },
+  { key: 'tui499', name: 'Túi mù 499k', price: 499000, tag: 'VIP' }
+];
+
+let customCategories = localStorage.getItem('shop_custom_categories') ? JSON.parse(localStorage.getItem('shop_custom_categories')) : [];
+
+function getAllPacks() {
+  let customMapped = customCategories.map(c => ({
+    key: c.key,
+    name: c.name,
+    price: c.price,
+    tag: c.tag || 'MỚI',
+    isCustom: true
+  }));
+  return defaultPacksData.concat(customMapped);
+}
+
+const tui29Accs = ["hoangchdbp:vinh08112003", "bichngocngaoda:Ngocngaoda:vip", "onlinexx9:nminh012", "tempest204:Thien2004@:vip", "ziziniboy2000:ngoclong22"];
+const tui49Accs = ["bichngocngaoda:Ngocngaoda", "tempest204:Thien2004@:vip", "huy9xkb:0987072220a"];
+const tui99Accs = ["huy9xkb:0987072220a", "ojcajdit2014:thanhtin!@#$%:vip", "Lqmb6v7610:*Phong161226"];
+const tui199Accs = ["phamxuan1993:thuanksnb1:vip", "thidchuhoang20h:Shoptethan4-0x"];
+const tui499Accs = ["phamxuan1993:thuanksnb1:vip"];
+
+let customAccs = localStorage.getItem('shop_custom_accs') ? JSON.parse(localStorage.getItem('shop_custom_accs')) : {};
+let deletedAccounts = localStorage.getItem('shop_deleted_accounts') ? new Set(JSON.parse(localStorage.getItem('shop_deleted_accounts'))) : new Set();
+function saveDeletedAccounts() {
+  localStorage.setItem('shop_deleted_accounts', JSON.stringify([...deletedAccounts]));
+}
+
+let currentTopupAmount = 0;
+let currentTopupCode = '';
+
+function getPackAccounts(key) {
+  let base = [];
+  if(key === 'tui29') base = tui29Accs;
+  if(key === 'tui49') base = tui49Accs;
+  if(key === 'tui99') base = tui99Accs;
+  if(key === 'tui199') base = tui199Accs;
+  if(key === 'tui499') base = tui49Accs;
+  return base.concat(customAccs[key] || []).filter(acc => {
+    const isVip = acc.endsWith(':vip');
+    const cleanRaw = isVip ? acc.slice(0, -4) : acc;
+    return !deletedAccounts.has(`${key}_${cleanRaw}`);
+  });
+}
+
+const money = n => n.toLocaleString('vi-VN') + 'đ';
+
+function getCustomerVipRank(total) {
+  if (total >= 20000000) return { level: 8, name: 'VIP 8', color: '#7c3aed', discount: 0.20 };
+  if (total >= 10000000) return { level: 7, name: 'VIP 7', color: '#db2777', discount: 0.15 };
+  if (total >= 3000000) return { level: 6, name: 'VIP 6', color: '#dc2626', discount: 0.10 };
+  if (total >= 1500000) return { level: 5, name: 'VIP 5', color: '#ea580c', discount: 0.05 };
+  if (total >= 800000) return { level: 4, name: 'VIP 4', color: '#d97706', discount: 0 }; 
+  if (total >= 300000) return { level: 3, name: 'VIP 3', color: '#059669', discount: 0 };
+  if (total >= 100000) return { level: 2, name: 'VIP 2', color: '#2563eb', discount: 0 };
+  if (total >= 10000) return { level: 1, name: 'VIP 1', color: '#4b5563', discount: 0 };
+  return null;
+}
+
+let giftCodes = localStorage.getItem('shop_giftcodes')
+  ? JSON.parse(localStorage.getItem('shop_giftcodes'))
+  : [{ code: 'WELCOME50K', reward: 50000, maxUses: 100, usedCount: 0 }];
+
+let redeemedGiftCodes = localStorage.getItem('shop_redeemed_giftcodes')
+  ? JSON.parse(localStorage.getItem('shop_redeemed_giftcodes'))
+  : [];
+
+function saveGiftCodeData() {
+  localStorage.setItem('shop_giftcodes', JSON.stringify(giftCodes));
+  localStorage.setItem('shop_redeemed_giftcodes', JSON.stringify(redeemedGiftCodes));
+  localStorage.setItem('shop_free_acc_codes', JSON.stringify(freeAccCodes));
+  localStorage.setItem('shop_used_free_codes', JSON.stringify(usedFreeAccCodes));
+}
+
+function setGiftNotice(id, message, ok = false) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.color = ok ? '#34d399' : '#fca5a5';
+  el.textContent = message;
+}
+
+function claimFreeAccCode() {
+  const input = document.getElementById('free-acc-code-input');
+  const code = (input.value || '').trim().toUpperCase();
+  if (!freeAccCodes.length) {
+    setGiftNotice('free-acc-notice', '', true);
+    return;
+  }
+  if (!code) {
+    setGiftNotice('free-acc-notice', '', true);
+    return;
+  }
+  freeAccCodes.forEach(x => { x.attemptCount = Number(x.attemptCount || 0); });
+  const attemptItem = freeAccCodes.find(x => x.code === code);
+  if (attemptItem) {
+    attemptItem.attemptCount += 1;
+    saveGiftCodeData();
+    renderAdminFreeCodes();
+  }
+
+  const item = freeAccCodes.find(x => x.code === code);
+  if (!item) return setGiftNotice('free-acc-notice', 'Mã code tặng acc không tồn tại!');
+  if (item.usedCount >= item.maxUses) {
+    return setGiftNotice('free-acc-notice', 'Mã code tặng acc này đã hết lượt nhận!');
+  }
+  if (usedFreeAccCodes.includes(code)) {
+    return setGiftNotice('free-acc-notice', 'Bạn đã sử dụng mã code tặng acc này rồi!');
+  }
+
+  let accString = '';
+  if (item.accs && item.usedCount < item.accs.length) {
+    accString = item.accs[item.usedCount];
+  } else {
+    let packKey = item.packKey || 'tui29';
+    let allAccs = getPackAccounts(packKey);
+    let availableIndices = [];
+    allAccs.forEach((acc) => {
+      let isVip = acc.endsWith(':vip');
+      let cleanRaw = isVip ? acc.slice(0, -4) : acc;
+      if (!usedAccounts.has(`${packKey}_${cleanRaw}`)) {
+        availableIndices.push({ uniqueId: `${packKey}_${cleanRaw}`, raw: cleanRaw });
+      }
+    });
+
+    if (availableIndices.length === 0) {
+      return setGiftNotice('free-acc-notice', 'Kho tài khoản nguồn của mã này hiện đã hết hàng!');
+    }
+
+    let chosenSlot = availableIndices[Math.floor(Math.random() * availableIndices.length)];
+    usedAccounts.add(chosenSlot.uniqueId);
+    accString = chosenSlot.raw;
+  }
+
+  item.usedCount += 1;
+  usedFreeAccCodes.push(code);
+  saveGiftCodeData();
+  renderAdminFreeCodes();
+
+  input.value = '';
+  setGiftNotice('free-acc-notice', 'Nhận thành công tài khoản miễn phí từ kho random!', true);
+
+  let parts = accString.split(':');
+  let u = parts[0];
+  let p = parts.slice(1).join(':');
+  let displayId = `FREE-${Math.floor(100 + Math.random() * 900)}`;
+
+  document.getElementById('modal-details').innerHTML = `
+    Mã phần quà: <b>${displayId}</b><br>
+    Nguồn: <b>Mã Code Tặng Acc (${code} - Kho Random)</b><br>
+    <hr style="border: 0; border-top: 1px dashed #64748b; margin: 10px 0;">
+    Tài khoản: <b>${u}</b><br>
+    Mật khẩu: <b>${p}</b>
+  `;
+  document.getElementById('success-modal').style.display = 'flex';
+  history.unshift(`<span style="color:#10b981;">🎁 Nhận acc miễn phí từ code ${code}</span> <span style="color:#60a5fa;">${new Date().toLocaleTimeString('vi-VN')}</span>`);
+  saveData();
+  renderHistory();
+}
+
+function createFreeAccCode() {
+  const code = (document.getElementById('admin-free-code-name').value || '').trim().toUpperCase();
+  const packKey = document.getElementById('admin-free-code-pack-select').value;
+  const limit = parseInt(document.getElementById('admin-free-code-limit').value, 10) || 10;
+  const notice = document.getElementById('admin-free-code-notice');
+
+  if (!code) {
+    notice.style.color = '#f87171';
+    notice.textContent = 'Vui lòng nhập tên mã code tặng acc.';
+    return;
+  }
+
+  if (freeAccCodes.some(x => x.code === code)) {
+    notice.style.color = '#f87171';
+    notice.textContent = 'Mã code tặng acc này đã tồn tại.';
+    return;
+  }
+
+  freeAccCodes.push({
+    code,
+    packKey: packKey || 'tui29',
+    maxUses: limit,
+    usedCount: 0
+  });
+
+  saveGiftCodeData();
+  renderAdminFreeCodes();
+  document.getElementById('admin-free-code-name').value = '';
+  notice.style.color = '#34d399';
+  notice.textContent = `Tạo thành công code tặng acc "${code}" (lấy ngẫu nhiên từ gói đã chọn)!`;
+}
+
+function deleteFreeAccCode(index) {
+  if (!confirm('Bạn có chắc muốn xóa code tặng acc này không?')) return;
+  freeAccCodes.splice(index, 1);
+  saveGiftCodeData();
+  renderAdminFreeCodes();
+}
+
+function renderAdminFreeCodes() {
+  const box = document.getElementById('admin-free-code-list');
+  if (!box) return;
+  if (!freeAccCodes.length) {
+    box.innerHTML = '<div style="color:#94a3b8; font-size: 0.8rem;">Chưa có code tặng acc nào.</div>';
+    return;
+  }
+  box.innerHTML = freeAccCodes.map((item, index) => `
+    <div style="border-bottom:1px solid #475569; padding:8px 0; font-size:0.8rem;">
+      <div style="font-weight:800; color:#34d399;">${item.code} (${item.packKey || 'Nguồn cũ'})</div>
+      <div style="color:#cbd5e1;">Đã dùng: ${Number(item.usedCount || 0)}/${item.maxUses} lượt · Lượt nhập: ${Number(item.attemptCount || 0)}</div>
+      <button onclick="deleteFreeAccCode(${index})" style="margin-top:4px; background:#ef4444; color:white; border:0; border-radius:4px; padding:3px 8px; cursor:pointer; font-size:0.75rem;">Xóa</button>
+    </div>
+  `).join('');
+}
+
+function renderFreeCodePackSelect() {
+  const sel = document.getElementById('admin-free-code-pack-select');
+  if (!sel) return;
+  let packs = getAllPacks();
+  sel.innerHTML = packs.map(p => `<option value="${p.key}">${p.name}</option>`).join('');
+}
+
+function redeemGiftCode() {
+  const input = document.getElementById('giftcode-input');
+  const code = (input.value || '').trim().toUpperCase();
+  if (!giftCodes.length) {
+    setGiftNotice('giftcode-notice', '', true);
+    return;
+  }
+  if (!code) {
+    setGiftNotice('giftcode-notice', '', true);
+    return;
+  }
+  giftCodes.forEach(x => { x.attemptCount = Number(x.attemptCount || 0); });
+  const attemptItem = giftCodes.find(x => x.code === code);
+  if (attemptItem) {
+    attemptItem.attemptCount += 1;
+    saveGiftCodeData();
+    renderAdminGiftCodes();
+  }
+
+  const item = giftCodes.find(x => x.code === code);
+  if (!item) return setGiftNotice('giftcode-notice', 'Giftcode không tồn tại!');
+  if (item.usedCount >= item.maxUses) return setGiftNotice('giftcode-notice', 'Giftcode đã hết lượt sử dụng!');
+  if (redeemedGiftCodes.includes(code)) return setGiftNotice('giftcode-notice', 'Bạn đã sử dụng giftcode này rồi!');
+
+  balance += item.reward;
+  item.usedCount += 1;
+  redeemedGiftCodes.push(code);
+  history.unshift(`<span style="color:#34d399;">🎁 Đổi giftcode ${code} +${money(item.reward)}</span> <span style="color:#60a5fa;">${new Date().toLocaleTimeString('vi-VN')}</span>`);
+  saveGiftCodeData();
+  saveData();
+  draw();
+  input.value = '';
+  setGiftNotice('giftcode-notice', `Đổi thành công! Bạn nhận được ${money(item.reward)}.`, true);
+  renderAdminGiftCodes();
+}
+
+function generateGiftCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = 'GIFT-';
+  for (let i = 0; i < 8; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  document.getElementById('admin-giftcode-name').value = code;
+}
+
+function createGiftCode() {
+  const code = (document.getElementById('admin-giftcode-name').value || '').trim().toUpperCase();
+  const reward = parseInt(document.getElementById('admin-giftcode-reward').value, 10);
+  const limit = parseInt(document.getElementById('admin-giftcode-limit').value, 10);
+
+  if (!/^[A-Z0-9_-]{3,40}$/.test(code)) {
+    return setGiftNotice('admin-giftcode-notice', 'Mã chỉ gồm chữ in hoa, số, - hoặc _.');
+  }
+  if (!Number.isInteger(reward) || reward <= 0 || !Number.isInteger(limit) || limit <= 0) {
+    return setGiftNotice('admin-giftcode-notice', 'Tiền thưởng và lượt dùng phải lớn hơn 0.');
+  }
+  if (giftCodes.some(x => x.code === code)) {
+    return setGiftNotice('admin-giftcode-notice', 'Giftcode đã tồn tại!');
+  }
+
+  const totalCost = reward * limit;
+  if (!Number.isSafeInteger(totalCost) || totalCost <= 0) {
+    return setGiftNotice('admin-giftcode-notice', 'Tổng tiền giftcode không hợp lệ.');
+  }
+  if (balance < totalCost) {
+    return setGiftNotice('admin-giftcode-notice', 'Không đủ số dư! Cần ' + money(totalCost) + ', hiện có ' + money(balance) + '.');
+  }
+
+  balance -= totalCost;
+  localStorage.setItem('shop_balance', String(balance));
+
+  giftCodes.push({
+    code,
+    reward,
+    maxUses: limit,
+    usedCount: 0,
+    totalCost,
+    createdAt: new Date().toISOString()
+  });
+  saveGiftCodeData();
+  renderAdminGiftCodes();
+  document.getElementById('admin-giftcode-name').value = '';
+  document.getElementById('admin-giftcode-reward').value = '';
+  document.getElementById('admin-giftcode-limit').value = '';
+  setGiftNotice('admin-giftcode-notice', 'Tạo giftcode thành công!', true);
+  draw();
+}
+
+function deleteGiftCode(index) {
+  if (!confirm('Bạn có chắc muốn xóa giftcode này không?')) return;
+  giftCodes.splice(index, 1);
+  saveGiftCodeData();
+  renderAdminGiftCodes();
+}
+
+function renderAdminGiftCodes() {
+  const box = document.getElementById('admin-giftcode-list');
+  if (!box) return;
+  if (!giftCodes.length) {
+    box.innerHTML = '<div style="color:#94a3b8;">Chưa có giftcode.</div>';
+    return;
+  }
+  box.innerHTML = giftCodes.map((item, index) => `
+    <div style="border-bottom:1px solid #475569; padding:10px 0; font-size:0.82rem;">
+      <div style="font-weight:800; color:#fbbf24;">${item.code}</div>
+      <div style="color:#cbd5e1;">Thưởng: ${money(item.reward)} · Đã dùng: ${Number(item.usedCount || 0)}/${item.maxUses} · Lượt nhập: ${Number(item.attemptCount || 0)}</div>
+      <div style="color:#fca5a5;">Ngân sách đã trừ: ${money(item.totalCost || (item.reward * item.maxUses))}</div>
+      <button onclick="deleteGiftCode(${index})" style="margin-top:6px; background:#ef4444; color:white; border:0; border-radius:6px; padding:5px 9px; cursor:pointer;">Xóa</button>
+    </div>
+  `).join('');
+}
+
+function saveData() {
+  localStorage.setItem('shop_balance', balance);
+  localStorage.setItem('shop_total_deposited', totalDeposited);
+  localStorage.setItem('shop_history', JSON.stringify(history));
+  localStorage.setItem('shop_used', JSON.stringify([...usedAccounts]));
+  localStorage.setItem('shop_purchased', JSON.stringify(purchasedMap));
+  localStorage.setItem('shop_custom_accs', JSON.stringify(customAccs));
+  localStorage.setItem('shop_custom_categories', JSON.stringify(customCategories));
+  localStorage.setItem('shop_withdraw_history', JSON.stringify(withdrawHistory));
+  localStorage.setItem('shop_events', JSON.stringify(events));
+  localStorage.setItem('shop_flash_sale', JSON.stringify(flashSaleData));
+  localStorage.setItem('shop_locked', isShopLocked);
+  localStorage.setItem('shop_last_claimed_date', lastClaimedDate);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const giftInput = document.getElementById('giftcode-input');
+  if (giftInput) giftInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') redeemGiftCode();
+  });
+  renderDemoPointStats();
+  startFakeBuyerSystem();
+  startOnlineCounterSystem();
+  startFakeCodeRedeemSystem();
+  renderRewardMailbox();
+  draw();
+});
+
+function startFakeCodeRedeemSystem() {
+  const fakeUsers = [
+    'pro_gamer99', 'kingofgame', 'thanhdat_qn', 'tuananh_pro', 'nguyen_van_a', 
+    'gamer_9x', 'cool_boy', 'vip_master', 'top1_gaming', 'dragon_ff', 
+    'shadow_99', 'pro_player', 'hunter_x', 'king_vn', 'speedboy'
+  ];
+  
+  const sampleCodes = ['WELCOME50K', 'TANGACC2026', 'FREE2026', 'VIPCODE99', 'EVENTHOT', 'CODEGIAM50K'];
+  const sampleRewards = [10000, 20000, 50000, 100000, 200000];
+
+  setInterval(() => {
+    let randomUser = fakeUsers[Math.floor(Math.random() * fakeUsers.length)];
+    let randomCode = sampleCodes[Math.floor(Math.random() * sampleCodes.length)];
+    let randomReward = sampleRewards[Math.floor(Math.random() * sampleRewards.length)];
+
+    history.unshift(`<span style="color:#fbbf24;">🎟️ [Mã Code 1s] ${randomUser} vừa nhập mã <b>${randomCode}</b> nhận thưởng ${money(randomReward)}</span> <span style="color:#60a5fa">${new Date().toLocaleTimeString('vi-VN')}</span>`);
+    
+    if(history.length > 50) history.pop();
+
+    renderHistory();
+  }, 1000);
+}
+
+function draw() {
+  document.getElementById('balance-badge').textContent = money(balance);
+  renderVipBadge();
+  renderVipGiftSection();
+  renderPacks();
+  renderHistory();
+  updateAdminStats();
+  updateEventUI();
+  renderInspectSelectOptions();
+  renderInspectList();
+  renderCustomCategoryAdminList();
+  renderFlashSaleAdminUI();
+  checkShopLockUI();
+  renderBXH();
+  renderAdminGiftCodes();
+  renderAdminFreeCodes();
+  renderFreeCodePackSelect();
+  renderWheelPrizePreview();
+  renderWheelMailbox();
+  renderLuckyWheelAdmin();
+  renderDailyTasks();
+  renderPointRewards();
+  renderPointRequests();
+  renderAdminPointRequests();
+  checkDailyTopTask();
+}
+
+function renderVipBadge() {
+  let vipContainer = document.getElementById('vip-badge-container');
+  let vip = getCustomerVipRank(totalDeposited);
+  if (vip) {
+    vipContainer.innerHTML = `<span class="vip-badge-tag" style="background: ${vip.color};" onclick="openVipModal()">${vip.name} (Đặc Quyền)</span>`;
+  } else {
+    vipContainer.innerHTML = `<span class="vip-badge-tag" style="background: #475569;" onclick="openVipModal()">Thành Viên Thường</span>`;
+  }
+}
+
+function openVipModal() {
+  let vip = getCustomerVipRank(totalDeposited);
+  let html = `
+    <div style="margin-bottom: 12px; font-weight: bold; color: #f8fafc;">Tổng tiền nạp tích lũy của bạn: <span style="color: #fb7185;">${money(totalDeposited)}</span> (${vip ? vip.name : 'Thành viên thường'})</div>
+    <hr style="border: 0; border-top: 1px solid #475569; margin: 12px 0;">
+    <b>📋 Chi tiết đặc quyền các cấp VIP:</b><br><br>
+    • <b>VIP 1 -> VIP 3:</b> Huy hiệu danh dự<br>
+    • <b>VIP 4 (Nạp 800k):</b> Không có ưu đãi giảm giá<br>
+    • <b>VIP 5 (Nạp 1.5tr):</b> Giảm <b>5%</b> khi mua tài khoản<br>
+    • <b>VIP 6 (Nạp 3tr):</b> Giảm <b>10%</b> khi mua tài khoản<br>
+    • <b>VIP 7 (Nạp 10tr):</b> Giảm <b>15%</b> + Tặng 1 Acc Miễn Phí mỗi ngày<br>
+    • <b>VIP 8 (Nạp 20tr):</b> Giảm <b>20%</b> + Tặng 1 Acc Miễn Phí mỗi ngày
+  `;
+  document.getElementById('vip-modal-body').innerHTML = html;
+  document.getElementById('vip-modal').style.display = 'flex';
+}
+
+function closeVipModal() {
+  document.getElementById('vip-modal').style.display = 'none';
+}
+
+function renderVipGiftSection() {
+  let vip = getCustomerVipRank(totalDeposited);
+  let giftSec = document.getElementById('vip-gift-section');
+  if (vip && vip.level >= 7) {
+    giftSec.style.display = 'block';
+  } else {
+    giftSec.style.display = 'none';
+  }
+}
+
+function claimVipDailyGift() {
+  let today = new Date().toLocaleDateString('vi-VN');
+  let notice = document.getElementById('vip-gift-notice');
+  if (lastClaimedDate === today) {
+    notice.style.color = '#f87171';
+    notice.textContent = 'Bạn đã nhận quà VIP của ngày hôm nay rồi! Hãy quay lại vào ngày mai.';
+    return;
+  }
+
+  let packs = getAllPacks();
+  let available = [];
+  packs.forEach(p => {
+    let accs = getPackAccounts(p.key);
+    accs.forEach(acc => {
+      let isVip = acc.endsWith(':vip');
+      let cleanRaw = isVip ? acc.slice(0, -4) : acc;
+      if (!usedAccounts.has(`${p.key}_${cleanRaw}`)) {
+        available.push({ packKey: p.key, raw: cleanRaw });
+      }
+    });
+  });
+
+  if (available.length === 0) {
+    notice.style.color = '#f87171';
+    notice.textContent = 'Kho hiện đang hết tài khoản! Vui lòng báo Admin thêm kho.';
+    return;
+  }
+
+  let chosen = available[Math.floor(Math.random() * available.length)];
+  usedAccounts.add(`${chosen.packKey}_${chosen.raw}`);
+  lastClaimedDate = today;
+  saveData();
+
+  let parts = chosen.raw.split(':');
+  let u = parts[0];
+  let p = parts.slice(1).join(':');
+
+  document.getElementById('modal-details').innerHTML = `
+    Nguồn quà: <b>Đặc Quyền VIP Nhận Quà Hằng Ngày</b><br>
+    <hr style="border: 0; border-top: 1px dashed #64748b; margin: 10px 0;">
+    Tài khoản: <b>${u}</b><br>
+    Mật khẩu: <b>${p}</b>
+  `;
+  document.getElementById('success-modal').style.display = 'flex';
+  notice.style.color = '#34d399';
+  notice.textContent = 'Nhận quà miễn phí thành công!';
+  draw();
+}
+
+function renderPacks() {
+  let container = document.getElementById('packs-container');
+  let packs = getAllPacks();
+  let vip = getCustomerVipRank(totalDeposited);
+  let discountRate = vip ? vip.discount : 0;
+
+  let html = packs.map(pack => {
+    let allAccs = getPackAccounts(pack.key);
+    let remaining = allAccs.filter(acc => {
+      let isVip = acc.endsWith(':vip');
+      let cleanRaw = isVip ? acc.slice(0, -4) : acc;
+      return !usedAccounts.has(`${pack.key}_${cleanRaw}`);
+    }).length;
+
+    let originalPrice = pack.price;
+    let finalPrice = originalPrice;
+    let isFlash = false;
+
+    if (flashSaleData.active && flashSaleData.packKey === pack.key && flashSaleData.soldCount < flashSaleData.limitCount) {
+      finalPrice = flashSaleData.salePrice;
+      isFlash = true;
+    } else if (discountRate > 0) {
+      finalPrice = Math.floor(originalPrice * (1 - discountRate));
+    }
+
+    return `
+      <div class="product-card">
+        <div class="product-img">
+          ${isFlash ? '<span class="sale-badge">FLASH SALE</span>' : ''}
+          <span class="badge-tag">${pack.tag}</span>
+          <span>${pack.name}</span>
+        </div>
+        <div class="product-body">
+          <div>
+            <div class="product-name">${pack.name} - Tự Động 100%</div>
+            <div class="product-stock">Còn lại: <b style="color: #34d399;">${remaining}</b> tài khoản</div>
+            <div class="product-price-box">
+              ${finalPrice < originalPrice ? `<span class="product-old-price">${money(originalPrice)}</span>` : ''}
+              <span class="product-price">${money(finalPrice)}</span>
+            </div>
+          </div>
+          <button class="btn-buy" ${remaining <= 0 || isShopLocked ? 'disabled' : ''} onclick="buyPack('${pack.key}', ${finalPrice})">
+            ${remaining <= 0 ? 'Hết Hàng' : 'Mua Ngay'}
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  container.innerHTML = html;
+}
+
+function buyPack(key, price) {
+  if (isShopLocked) {
+    alert('Shop hiện đang tạm khóa!');
+    return;
+  }
+  if (balance < price) {
+    alert('Số dư của bạn không đủ để thực hiện giao dịch này!');
+    scrollToTopup();
+    return;
+  }
+
+  let allAccs = getPackAccounts(key);
+  let available = allAccs.filter(acc => {
+    let isVip = acc.endsWith(':vip');
+    let cleanRaw = isVip ? acc.slice(0, -4) : acc;
+    return !usedAccounts.has(`${key}_${cleanRaw}`);
+  });
+
+  if (available.length === 0) {
+    alert('Túi này hiện tại đã hết hàng!');
+    return;
+  }
+
+  let chosen = available[Math.floor(Math.random() * available.length)];
+  let isVip = chosen.endsWith(':vip');
+  let cleanRaw = isVip ? chosen.slice(0, -4) : chosen;
+
+  balance -= price;
+  usedAccounts.add(`${key}_${cleanRaw}`);
+
+  if (flashSaleData.active && flashSaleData.packKey === key) {
+    flashSaleData.soldCount++;
+    if (flashSaleData.soldCount >= flashSaleData.limitCount) {
+      flashSaleData.active = false;
+    }
+  }
+
+  let parts = cleanRaw.split(':');
+  let u = parts[0];
+  let p = parts.slice(1).join(':');
+  let orderCode = `${key.toUpperCase()}-${Math.floor(100 + Math.random() * 900)}`;
+
+  purchasedMap[orderCode] = { username: u, password: p, packKey: key, price: price, date: new Date().toLocaleString('vi-VN') };
+
+  history.unshift(`<span>Mua thành công <b>${key}</b> (${orderCode})</span> <span style="color:#fb7185;">-${money(price)}</span>`);
+  saveData();
+
+  document.getElementById('modal-details').innerHTML = `
+    Mã đơn hàng: <b>${orderCode}</b><br>
+    Thanh toán: <b>${money(price)}</b><br>
+    <hr style="border: 0; border-top: 1px dashed #64748b; margin: 10px 0;">
+    Tài khoản: <b>${u}</b><br>
+    Mật khẩu: <b>${p}</b>
+  `;
+  document.getElementById('success-modal').style.display = 'flex';
+  draw();
+}
+
+function closeModal() {
+  document.getElementById('success-modal').style.display = 'none';
+}
+
+function createTopupRequest() {
+  let val = parseInt(document.getElementById('amount').value);
+  if (!val || val < 10000) {
+    alert('Vui lòng nạp tối thiểu 10.000đ!');
+    return;
+  }
+  currentTopupAmount = val;
+  currentTopupCode = `NAP${Math.floor(100000 + Math.random() * 900000)}`;
+
+  document.getElementById('qr-amount').textContent = money(val);
+  document.getElementById('qr-code').textContent = currentTopupCode;
+  document.getElementById('topup-form-area').style.display = 'none';
+  document.getElementById('topup-qr-area').style.display = 'block';
+}
+
+function confirmPaid() {
+  let addAmount = currentTopupAmount;
+  if (events.x2) addAmount *= 2;
+  else if (events.bonus20) addAmount = Math.floor(addAmount * 1.2);
+
+  balance += addAmount;
+  totalDeposited += currentTopupAmount;
+
+  history.unshift(`<span style="color:#34d399;">Nạp tiền tự động (${currentTopupCode})</span> <span style="color:#34d399;">+${money(addAmount)}</span>`);
+  saveData();
+
+  document.getElementById('topup-form-area').style.display = 'block';
+  document.getElementById('topup-qr-area').style.display = 'none';
+  document.getElementById('amount').value = '';
+
+  let res = document.getElementById('result');
+  res.style.display = 'block';
+  res.innerHTML = `✅ Đã xác nhận nạp thành công <b>${money(addAmount)}</b> vào tài khoản!`;
+
+  draw();
+}
+
+function lookupOrder() {
+  let code = document.getElementById('lookup-code').value.trim().toUpperCase();
+  let res = document.getElementById('lookup-result');
+  let notice = document.getElementById('lookup-notice');
+
+  res.style.display = 'none';
+  notice.textContent = '';
+
+  if (!code) {
+    notice.textContent = 'Vui lòng nhập mã đơn hàng cần tra cứu!';
+    return;
+  }
+
+  let order = purchasedMap[code];
+  if (order) {
+    res.style.display = 'block';
+    res.innerHTML = `
+      Mã đơn: <b>${code}</b><br>
+      Ngày mua: <b>${order.date}</b><br>
+      Tài khoản: <b>${order.username}</b><br>
+      Mật khẩu: <b>${order.password}</b>
+    `;
+  } else {
+    notice.textContent = 'Không tìm thấy thông tin đơn hàng này!';
+  }
+}
+
+function transferMoney() {
+  let target = document.getElementById('transfer-username').value.trim();
+  let amt = parseInt(document.getElementById('transfer-amount').value);
+  let res = document.getElementById('transfer-result');
+  let notice = document.getElementById('transfer-notice');
+
+  res.style.display = 'none';
+  notice.textContent = '';
+
+  if (!target || !amt || amt <= 0) {
+    notice.textContent = 'Vui lòng nhập đầy đủ người nhận và số tiền hợp lệ!';
+    return;
+  }
+  if (balance < amt) {
+    notice.textContent = 'Số dư của bạn không đủ để thực hiện chuyển tiền!';
+    return;
+  }
+
+  balance -= amt;
+  history.unshift(`<span>Chuyển tiền cho <b>${target}</b></span> <span style="color:#f43f5e;">-${money(amt)}</span>`);
+  saveData();
+
+  res.style.display = 'block';
+  res.innerHTML = `✅ Đã chuyển thành công <b>${money(amt)}</b> tới tài khoản <b>${target}</b>!`;
+  document.getElementById('transfer-username').value = '';
+  document.getElementById('transfer-amount').value = '';
+
+  draw();
+}
+
+function renderHistory() {
+  let list = document.getElementById('history');
+  if (history.length === 0) {
+    list.innerHTML = '<li><span style="color: #94a3b8;">Chưa có lịch sử giao dịch phát sinh.</span></li>';
+    return;
+  }
+  list.innerHTML = history.slice(0, 15).map(item => `<li>${item}</li>`).join('');
+}
+
+function scrollToTopup() {
+  switchTab('shop');
+  document.getElementById('topup-section').scrollIntoView({ behavior: 'smooth' });
+}
+
+function switchTab(tab) {
+  document.getElementById('shop-section').style.display = tab === 'shop' ? 'block' : 'none';
+  document.getElementById('bxh-section').style.display = tab === 'bxh' ? 'block' : 'none';
+  document.getElementById('wheel-section').style.display = tab === 'wheel' ? 'block' : 'none';
+  document.getElementById('tasks-section').style.display = tab === 'tasks' ? 'block' : 'none';
+  document.getElementById('admin-section').style.display = tab === 'admin' ? 'block' : 'none';
+
+  document.querySelectorAll('.nav-menu a').forEach(a => a.classList.remove('active'));
+  let navEl = document.getElementById(`nav-${tab}`);
+  if (navEl) navEl.classList.add('active');
+}
+
+function adminLogin() {
+  let pass = document.getElementById('admin-pass').value;
+  if (pass === 'admin123') {
+    document.getElementById('admin-login-box').style.display = 'none';
+    document.getElementById('admin-dashboard').style.display = 'block';
+  } else {
+    document.getElementById('admin-login-notice').textContent = 'Mật khẩu quản trị không chính xác!';
+  }
+}
+
+function adminLogout() {
+  document.getElementById('admin-login-box').style.display = 'block';
+  document.getElementById('admin-dashboard').style.display = 'none';
+  document.getElementById('admin-pass').value = '';
+}
+
+function updateAdminStats() {
+  let soldCount = Object.keys(purchasedMap).length;
+  let totalProfit = Object.values(purchasedMap).reduce((sum, item) => sum + item.price, 0);
+  let totalWithdrawn = withdrawHistory.reduce((sum, item) => sum + item.amount, 0);
+
+  document.getElementById('stat-sold').textContent = soldCount;
+  document.getElementById('stat-profit').textContent = money(totalProfit);
+  document.getElementById('stat-withdrawn').textContent = money(totalWithdrawn);
+
+  let ordersList = document.getElementById('admin-orders-list');
+  if (soldCount === 0) {
+    ordersList.innerHTML = '<p style="font-size: 0.85rem; color: #94a3b8;">Chưa có đơn hàng nào.</p>';
+  } else {
+    ordersList.innerHTML = Object.entries(purchasedMap).map(([code, item]) => `
+      <div style="border-bottom: 1px solid #475569; padding: 6px 0; font-size: 0.8rem;">
+        <b>${code}</b> - ${item.price.toLocaleString('vi-VN')}đ<br>
+        <span style="color:#cbd5e1;">${item.username} : ${item.password}</span>
+      </div>
+    `).join('');
+  }
+
+  let withdrawList = document.getElementById('admin-withdraw-list');
+  if (withdrawHistory.length === 0) {
+    withdrawList.innerHTML = '<p style="font-size: 0.85rem; color: #94a3b8;">Chưa có lịch sử rút tiền.</p>';
+  } else {
+    withdrawList.innerHTML = withdrawHistory.map(item => `
+      <div style="border-bottom: 1px solid #475569; padding: 6px 0; font-size: 0.8rem;">
+        <b style="color: #fb7185;">-${money(item.amount)}</b> - ${item.bank}<br>
+        <span style="color:#cbd5e1;">${item.date}</span>
+      </div>
+    `).join('');
+  }
+}
+
+function adminAddAccounts() {
+  let key = document.getElementById('admin-pack-select').value;
+  let text = document.getElementById('admin-new-accs').value.trim();
+  let notice = document.getElementById('admin-add-notice');
+
+  if (!text) {
+    notice.style.color = '#f87171';
+    notice.textContent = 'Vui lòng nhập tài khoản!';
+    return;
+  }
+
+  let lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  if (!customAccs[key]) customAccs[key] = [];
+  customAccs[key] = customAccs[key].concat(lines);
+
+  saveData();
+  document.getElementById('admin-new-accs').value = '';
+  notice.style.color = '#34d399';
+  notice.textContent = `Đã thêm thành công ${lines.length} tài khoản vào gói ${key}!`;
+  draw();
+}
+
+function adminWithdraw() {
+  let amt = parseInt(document.getElementById('withdraw-amount').value);
+  let bank = document.getElementById('withdraw-bank').value.trim();
+  let notice = document.getElementById('withdraw-notice');
+
+  let totalProfit = Object.values(purchasedMap).reduce((sum, item) => sum + item.price, 0);
+  let totalWithdrawn = withdrawHistory.reduce((sum, item) => sum + item.amount, 0);
+  let availableProfit = totalProfit - totalWithdrawn;
+
+  if (!amt || amt <= 0 || !bank) {
+    notice.style.color = '#f87171';
+    notice.textContent = 'Vui lòng nhập số tiền hợp lệ và thông tin tài khoản!';
+    return;
+  }
+  if (amt > availableProfit) {
+    notice.style.color = '#f87171';
+    notice.textContent = 'Số tiền rút vượt quá lợi nhuận khả dụng!';
+    return;
+  }
+
+  withdrawHistory.unshift({ amount: amt, bank: bank, date: new Date().toLocaleString('vi-VN') });
+  saveData();
+
+  document.getElementById('withdraw-amount').value = '';
+  document.getElementById('withdraw-bank').value = '';
+  notice.style.color = '#34d399';
+  notice.textContent = `Tạo lệnh rút thành công ${money(amt)}!`;
+  draw();
+}
+
+function adminResetStock() {
+  if (confirm('Bạn có chắc chắn muốn phục hồi lại toàn bộ tài khoản đã bán không?')) {
+    usedAccounts.clear();
+    saveData();
+    document.getElementById('reset-notice').style.color = '#34d399';
+    document.getElementById('reset-notice').textContent = 'Đã khôi phục thành công toàn bộ kho tài khoản!';
+    draw();
+  }
+}
+
+function setFlashSale() {
+  let packKey = document.getElementById('flash-pack-select').value;
+  let price = parseInt(document.getElementById('flash-sale-price').value);
+  let limit = parseInt(document.getElementById('flash-sale-limit').value);
+  let notice = document.getElementById('flash-notice');
+
+  if (!price || price <= 0 || !limit || limit <= 0) {
+    notice.style.color = '#f87171';
+    notice.textContent = 'Vui lòng nhập giá bán và số suất hợp lệ!';
+    return;
+  }
+
+  flashSaleData = {
+    active: true,
+    packKey: packKey,
+    salePrice: price,
+    limitCount: limit,
+    soldCount: 0
+  };
+
+  saveData();
+  notice.style.color = '#34d399';
+  notice.textContent = 'Kích hoạt Flash Sale thành công!';
+  draw();
+}
+
+function stopFlashSale() {
+  flashSaleData.active = false;
+  saveData();
+  document.getElementById('flash-notice').style.color = '#fbbf24';
+  document.getElementById('flash-notice').textContent = 'Đã tắt chương trình Flash Sale!';
+  draw();
+}
+
+function renderFlashSaleAdminUI() {
+  let sel = document.getElementById('flash-pack-select');
+  let packs = getAllPacks();
+  sel.innerHTML = packs.map(p => `<option value="${p.key}">${p.name}</option>`).join('');
+
+  let statusBox = document.getElementById('flash-status-box');
+  if (flashSaleData.active) {
+    let p = packs.find(item => item.key === flashSaleData.packKey);
+    let pName = p ? p.name : flashSaleData.packKey;
+    statusBox.innerHTML = `
+      🔥 <b>Đang chạy Flash Sale:</b> ${pName}<br>
+      Giá sale: <b style="color:#fb7185;">${money(flashSaleData.salePrice)}</b><br>
+      Đã bán: <b>${flashSaleData.soldCount} / ${flashSaleData.limitCount} suất</b>
+    `;
+  } else {
+    statusBox.innerHTML = 'Chưa có chương trình Flash Sale nào đang hoạt động.';
+  }
+}
+
+function toggleEvent(key) {
+  events[key] = document.getElementById(`ev-${key}`).checked;
+  saveData();
+  updateEventUI();
+}
+
+function updateEventUI() {
+  document.getElementById('ev-x2').checked = !!events.x2;
+  document.getElementById('ev-bonus20').checked = !!events.bonus20;
+  document.getElementById('ev-accngon').checked = !!events.accngon;
+
+  let activeText = [];
+  if (events.x2) activeText.push('X2 Nạp Thẻ');
+  if (events.bonus20) activeText.push('Tặng 20% Nạp');
+  if (events.accngon) activeText.push('Tăng Tỉ Lệ Acc VIP');
+
+  let banner = document.getElementById('client-event-banner');
+  if (activeText.length > 0) {
+    banner.style.display = 'flex';
+    document.getElementById('active-event-text').textContent = activeText.join(' | ');
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+function toggleShopLock() {
+  isShopLocked = document.getElementById('shop-locked-toggle').checked;
+  saveData();
+  checkShopLockUI();
+}
+
+function checkShopLockUI() {
+  document.getElementById('shop-locked-toggle').checked = isShopLocked;
+  document.getElementById('shop-locked-overlay').style.display = isShopLocked ? 'block' : 'none';
+}
+
+function adminCreateCategory() {
+  let name = document.getElementById('new-cat-name').value.trim();
+  let price = parseInt(document.getElementById('new-cat-price').value);
+  let tag = document.getElementById('new-cat-tag').value.trim() || 'MỚI';
+  let codesText = document.getElementById('new-cat-codes').value.trim();
+  let notice = document.getElementById('new-cat-notice');
+
+  if (!name || !price || price <= 0) {
+    notice.style.color = '#f87171';
+    notice.textContent = 'Vui lòng nhập tên danh mục và giá bán hợp lệ!';
+    return;
+  }
+
+  let catKey = `custom_${Date.now()}`;
+  let codes = codesText.split('\n').map(c => c.trim()).filter(c => c.length > 0);
+
+  customCategories.push({ key: catKey, name: name, price: price, tag: tag });
+  customAccs[catKey] = codes;
+
+  saveData();
+  document.getElementById('new-cat-name').value = '';
+  document.getElementById('new-cat-price').value = '';
+  document.getElementById('new-cat-tag').value = '';
+  document.getElementById('new-cat-codes').value = '';
+
+  notice.style.color = '#34d399';
+  notice.textContent = `Tạo danh mục "${name}" thành công với ${codes.length} tài khoản!`;
+  draw();
+}
+
+function deleteCustomCategory(key) {
+  if (confirm('Bạn có chắc muốn xóa thể loại hàng này không?')) {
+    customCategories = customCategories.filter(c => c.key !== key);
+    delete customAccs[key];
+    saveData();
+    draw();
+  }
+}
+
+function renderCustomCategoryAdminList() {
+  let list = document.getElementById('custom-category-list');
+  if (customCategories.length === 0) {
+    list.innerHTML = '<div style="font-size:0.8rem; color:#94a3b8;">Chưa có thể loại tùy chỉnh nào.</div>';
+    return;
+  }
+  list.innerHTML = customCategories.map(c => {
+    let accs = customAccs[c.key] || [];
+    return `
+      <div style="border-bottom:1px solid #475569; padding:6px 0; font-size:0.8rem; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <b style="color:#60a5fa;">${c.name}</b> (${money(c.price)})<br>
+          <span style="color:#cbd5e1;">Số lượng acc: ${accs.length}</span>
+        </div>
+        <button onclick="deleteCustomCategory('${c.key}')" style="background:#ef4444; color:white; border:0; padding:4px 8px; border-radius:4px; cursor:pointer;">Xóa</button>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderInspectSelectOptions() {
+  let sel = document.getElementById('inspect-pack-select');
+  let packs = getAllPacks();
+  sel.innerHTML = packs.map(p => `<option value="${p.key}">${p.name}</option>`).join('');
+}
+
+function renderInspectList() {
+  let key = document.getElementById('inspect-pack-select').value;
+  let container = document.getElementById('inspect-list-container');
+  let accs = getPackAccounts(key);
+
+  if (accs.length === 0) {
+    container.innerHTML = '<div style="font-size:0.8rem; color:#94a3b8;">Không có tài khoản nào trong danh mục này.</div>';
+    return;
+  }
+
+  container.innerHTML = accs.map(acc => {
+    let isVip = acc.endsWith(':vip');
+    let cleanRaw = isVip ? acc.slice(0, -4) : acc;
+    let isUsed = usedAccounts.has(`${key}_${cleanRaw}`);
+
+    return `
+      <div style="border-bottom:1px solid #475569; padding:6px 0; font-size:0.8rem; display:flex; justify-content:space-between; align-items:center;">
+        <span style="${isUsed ? 'text-decoration:line-through; opacity:0.5;' : ''}">${cleanRaw} ${isVip ? '<b style="color:#fbbf24;">[VIP]</b>' : ''}</span>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span style="font-size:0.7rem; color:${isUsed ? '#f87171' : '#34d399'};">${isUsed ? 'ĐÃ MUA' : 'SẴN SÀNG'}</span>
+          <button onclick="deleteSingleAccount('${key}', '${cleanRaw}')" style="background:#ef4444; color:white; border:0; padding:2px 6px; border-radius:4px; cursor:pointer; font-size:0.7rem;">Xóa</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function deleteSingleAccount(key, rawAcc) {
+  if (!confirm('Bạn có chắc muốn xóa tài khoản này khỏi kho không?')) return;
+  let fullUniqueId = `${key}_${rawAcc}`;
+  deletedAccounts.add(fullUniqueId);
+  saveDeletedAccounts();
+
+  if (customAccs[key]) {
+    customAccs[key] = customAccs[key].filter(acc => {
+      let isVip = acc.endsWith(':vip');
+      let clean = isVip ? acc.slice(0, -4) : acc;
+      return clean !== rawAcc;
+    });
+  }
+
+  saveData();
+  renderInspectList();
+  renderPacks();
+}
+
+/* ===== BẢNG XẾP HẠNG & ĐUA TOP ===== */
+let demoDepositors = [
+  { username: 'Lương Tuấn Anh (Admin)', total: 50000000, isAdmin: true },
+  { username: 'Nguyễn Văn Tuấn', total: 28500000 },
+  { username: 'Trần Thị Mai', total: 19200000 },
+  { username: 'Hoàng Minh Châu', total: 14500000 },
+  { username: 'Lê Quốc Bảo', total: 9800000 },
+  { username: 'Phạm Đức Anh', total: 4200000 },
+  { username: 'Vũ Hải Nam', total: 2100000 },
+  { username: 'Đặng Ngọc Bích', total: 950000 }
+];
+
+let rewardMailbox = localStorage.getItem('shop_reward_mailbox')
+  ? JSON.parse(localStorage.getItem('shop_reward_mailbox'))
+  : [];
+
+function saveRewardMailbox() {
+  localStorage.setItem('shop_reward_mailbox', JSON.stringify(rewardMailbox));
+}
+
+function renderRewardMailbox() {
+  let list = document.getElementById('reward-mailbox-list');
+  if (!list) return;
+
+  if (!rewardMailbox || rewardMailbox.length === 0) {
+    list.innerHTML = '<div style="opacity: .7; font-size: 13px;">Hòm thư đang trống.</div>';
+    return;
+  }
+
+  list.innerHTML = rewardMailbox.map((mail, idx) => `
+    <div style="border-bottom: 1px solid #475569; padding: 10px 0;">
+      <div style="font-weight: 800; color: #fbbf24; font-size: 0.9rem;">${mail.title}</div>
+      <div style="font-size: 0.85rem; color: #f1f5f9; margin: 4px 0;">${mail.message}</div>
+      <div style="font-size: 0.75rem; color: #94a3b8; display:flex; justify-content:space-between; align-items:center;">
+        <span>${mail.time}</span>
+        ${mail.opened
+          ? '<span style="color:#10b981; font-weight:700;">Đã nhận</span>'
+          : `<button onclick="claimRewardMail(${idx})" style="background:#10b981; color:#fff; border:0; padding:4px 10px; border-radius:6px; cursor:pointer; font-weight:700;">Mở thư & Nhận quà</button>`
+        }
+      </div>
+    </div>
+  `).join('');
+}
+
+function claimRewardMail(index) {
+  let mail = rewardMailbox[index];
+  if (!mail || mail.opened) return;
+
+  mail.opened = true;
+  if (mail.cash) {
+    balance += Number(mail.cash);
+  }
+
+  saveRewardMailbox();
+  saveData();
+  renderRewardMailbox();
+  draw();
+  alert('🎉 Bạn đã mở thư và nhận thưởng thành công!');
+}
+
+function renderBXH() {
+  let bxhBody = document.getElementById('bxh-list');
+  if (!bxhBody) return;
+
+  let allUsers = [...demoDepositors];
+  let currentUserIndex = allUsers.findIndex(u => u.username === 'Bạn (Tài khoản hiện tại)');
+
+  if (currentUserIndex >= 0) {
+    allUsers[currentUserIndex].total = totalDeposited;
+  } else {
+    allUsers.push({ username: 'Bạn (Tài khoản hiện tại)', total: totalDeposited, isSelf: true });
+  }
+
+  allUsers.sort((a, b) => b.total - a.total);
+
+  bxhBody.innerHTML = allUsers.map((u, idx) => {
+    let rank = idx + 1;
+    let vip = getCustomerVipRank(u.total);
+    let rankBadge = rank;
+
+    if (rank === 1) rankBadge = '🥇 TOP 1';
+    else if (rank === 2) rankBadge = '🥈 TOP 2';
+    else if (rank === 3) rankBadge = '🥉 TOP 3';
+
+    let rowBg = u.isSelf ? 'background: rgba(59, 130, 246, 0.2); font-weight: 700;' : '';
+
+    return `
+      <tr style="${rowBg}">
+        <td style="font-weight: 800; color: ${rank <= 3 ? '#fbbf24' : '#cbd5e1'};">${rankBadge}</td>
+        <td>
+          ${u.username}
+          ${u.isAdmin ? '<span class="admin-name-badge">ADMIN</span>' : ''}
+          ${rank <= 3 ? '<span class="top-name-badge">ĐẠI GIA</span>' : ''}
+        </td>
+        <td><span style="color: ${vip ? vip.color : '#94a3b8'}; font-weight: 700;">${vip ? vip.name : 'Thường'}</span></td>
+        <td style="text-align: right; font-weight: 800; color: #34d399;">${money(u.total)}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function resetBXHDeposits() {
+  if (!confirm('Bạn có chắc muốn chốt sổ và trao thưởng đua top không? Phần thưởng sẽ tự động gửi vào hòm thư!')) return;
+
+  let allUsers = [...demoDepositors];
+  let currentUserIndex = allUsers.findIndex(u => u.username === 'Bạn (Tài khoản hiện tại)');
+  if (currentUserIndex >= 0) allUsers[currentUserIndex].total = totalDeposited;
+  else allUsers.push({ username: 'Bạn (Tài khoản hiện tại)', total: totalDeposited, isSelf: true });
+
+  allUsers.sort((a, b) => b.total - a.total);
+
+  let userRank = allUsers.findIndex(u => u.isSelf) + 1;
+
+  if (userRank === 1) {
+    rewardMailbox.unshift({
+      title: '🏆 THƯỞNG ĐUA TOP 1 NẠP THẺ',
+      message: 'Chúc mừng bạn xuất sắc đạt TOP 1 Đua Top! Bạn nhận được 5.000.000đ và 2 Acc 499k ngẫu nhiên!',
+      cash: 5000000,
+      opened: false,
+      time: new Date().toLocaleString('vi-VN')
+    });
+  } else if (userRank === 2) {
+    rewardMailbox.unshift({
+      title: '🥈 THƯỞNG ĐUA TOP 2 NẠP THẺ',
+      message: 'Chúc mừng bạn xuất sắc đạt TOP 2 Đua Top! Bạn nhận được 3.000.000đ và 1 Acc 499k ngẫu nhiên!',
+      cash: 3000000,
+      opened: false,
+      time: new Date().toLocaleString('vi-VN')
+    });
+  } else if (userRank === 3) {
+    rewardMailbox.unshift({
+      title: '🥉 THƯỞNG ĐUA TOP 3 NẠP THẺ',
+      message: 'Chúc mừng bạn xuất sắc đạt TOP 3 Đua Top! Bạn nhận được 1.000.000đ và 1 Acc 199k ngẫu nhiên!',
+      cash: 1000000,
+      opened: false,
+      time: new Date().toLocaleString('vi-VN')
+    });
+  }
+
+  totalDeposited = 0;
+  saveData();
+  saveRewardMailbox();
+  renderRewardMailbox();
+  draw();
+  alert('✅ Đã reset Bảng Xếp Hạng thành công và gửi thưởng hòm thư!');
+}
+
+function startFakeBuyerSystem() {
+  const fakeUsers = [
+    'nguyen_van_a', 'tran_van_b', 'le_thi_c', 'hoang_long_99', 'phong_ba_game',
+    'pro_player_2026', 'vip_boy_hn', 'hang_khung_sg', 'ha_noi_vip', 'san_acc_dinh'
+  ];
+  const fakePacks = ['tui29', 'tui49', 'tui99', 'tui199', 'tui499'];
+
+  setInterval(() => {
+    let u = fakeUsers[Math.floor(Math.random() * fakeUsers.length)];
+    let pKey = fakePacks[Math.floor(Math.random() * fakePacks.length)];
+    let pObj = getAllPacks().find(item => item.key === pKey);
+    let pName = pObj ? pObj.name : pKey;
+
+    history.unshift(`<span>[Hệ Thống 1s] <b>${u}</b> vừa mua thành công <b>${pName}</b></span> <span style="color:#60a5fa">${new Date().toLocaleTimeString('vi-VN')}</span>`);
+    if (history.length > 50) history.pop();
+
+    renderHistory();
+  }, 1000);
+}
+
+function startOnlineCounterSystem() {
+  setInterval(() => {
+    let countEl = document.getElementById('online-count');
+    if (!countEl) return;
+    let current = parseInt(countEl.textContent) || 342;
+    let delta = Math.floor(Math.random() * 7) - 3;
+    let nextCount = Math.max(120, current + delta);
+    countEl.textContent = nextCount;
+  }, 3000);
+}
+
+/* ===== VÒNG QUAY MAY MẮN ===== */
+const defaultLuckyWheelRewards = [
+  { name: '10.000đ tiền mặt', type: 'cash', value: 10000, weight: 30 },
+  { name: '20.000đ tiền mặt', type: 'cash', value: 20000, weight: 25 },
+  { name: '50.000đ tiền mặt', type: 'cash', value: 50000, weight: 15 },
+  { name: '100.000đ tiền mặt', type: 'cash', value: 100000, weight: 8 },
+  { name: 'Acc Túi 29k', type: 'acc', value: 'tui29', weight: 12 },
+  { name: 'Acc Túi 99k', type: 'acc', value: 'tui99', weight: 6 },
+  { name: 'Acc VIP 499k', type: 'acc', value: 'tui499', weight: 2 },
+  { name: 'Mất lượt / Chúc bạn may mắn', type: 'text', value: 'Chúc bạn may mắn lần sau!', weight: 20 }
+];
+
+let luckyWheelRewards = localStorage.getItem('shop_wheel_rewards')
+  ? JSON.parse(localStorage.getItem('shop_wheel_rewards'))
+  : defaultLuckyWheelRewards;
+
+let isSpinningWheel = false;
+
+function saveLuckyWheelSettings() {
+  let list = document.getElementById('wheel-admin-list');
+  if (!list) return;
+
+  let items = list.querySelectorAll('.wheel-admin-item');
+  let newRewards = [];
+
+  items.forEach((item, idx) => {
+    let name = item.querySelector('.w-name').value.trim();
+    let type = item.querySelector('.w-type').value;
+    let val = item.querySelector('.w-val').value.trim();
+    let weight = parseInt(item.querySelector('.w-weight').value) || 1;
+
+    let rewardVal = val;
+    if (type === 'cash') rewardVal = parseInt(val) || 0;
+
+    newRewards.push({
+      name: name || `Ô ${idx + 1}`,
+      type: type,
+      value: rewardVal,
+      weight: Math.max(1, weight)
+    });
+  });
+
+  luckyWheelRewards = newRewards;
+  localStorage.setItem('shop_wheel_rewards', JSON.stringify(luckyWheelRewards));
+
+  let notice = document.getElementById('wheel-admin-notice');
+  if (notice) {
+    notice.style.color = '#34d399';
+    notice.textContent = 'Đã lưu cài đặt 8 ô thưởng vòng quay!';
+  }
+
+  renderWheelPrizePreview();
+}
+
+function renderLuckyWheelAdmin() {
+  let list = document.getElementById('wheel-admin-list');
+  if (!list) return;
+
+  let packs = getAllPacks();
+
+  list.innerHTML = luckyWheelRewards.map((reward, idx) => `
+    <div class="wheel-admin-item" style="background:#1e293b; border:1px solid #475569; padding:10px; border-radius:8px; font-size:0.8rem;">
+      <b>Ô ${idx + 1}</b>
+      <input class="w-name" type="text" value="${reward.name}" placeholder="Tên hiển thị..." style="margin-top:4px;">
+      <select class="w-type" style="margin-top:4px;" onchange="toggleWheelValInput(${idx}, this.value)">
+        <option value="cash" ${reward.type === 'cash' ? 'selected' : ''}>Cộng Tiền</option>
+        <option value="acc" ${reward.type === 'acc' ? 'selected' : ''}>Tặng Acc Kho</option>
+        <option value="text" ${reward.type === 'text' ? 'selected' : ''}>Quà Chữ / Chúc May Mắn</option>
+      </select>
+      <div id="w-val-box-${idx}" style="margin-top:4px;">
+        ${renderWheelValField(reward.type, reward.value)}
+      </div>
+      <input class="w-weight" type="number" value="${reward.weight}" placeholder="Tỉ lệ / Trọng số..." style="margin-top:4px;">
+    </div>
+  `).join('');
+}
+
+function renderWheelValField(type, val) {
+  if (type === 'acc') {
+    let packs = getAllPacks();
+    return `
+      <select class="w-val">
+        ${packs.map(p => `<option value="\${p.key}" ${p.key === val ? 'selected' : ''}>${p.name}</option>`).join('')}
+      </select>
+    `;
+  }
+  return `<input class="w-val" type="text" value="${val}" placeholder="${type === 'cash' ? 'Số tiền VNĐ...' : 'Nội dung quà/thông báo...'}">`;
+}
+
+function toggleWheelValInput(idx, type) {
+  let box = document.getElementById(`w-val-box-${idx}`);
+  if (!box) return;
+  box.innerHTML = renderWheelValField(type, type === 'cash' ? 10000 : (type === 'acc' ? 'tui29' : 'Quà may mắn'));
+}
+
+function renderWheelPrizePreview() {
+  let box = document.getElementById('wheel-prize-preview');
+  if (!box) return;
+
+  box.innerHTML = luckyWheelRewards.map(r => `
+    <div style="background:#1e293b; border:1px solid #475569; border-radius:8px; padding:8px 10px; font-size:0.8rem; color:#f1f5f9; display:flex; justify-content:space-between; align-items:center;">
+      <span>🎁 <b>${r.name}</b></span>
+      <span style="color:#fbbf24; font-size:0.75rem;">TL: ${r.weight}</span>
+    </div>
+  `).join('');
+
+  let labels = document.getElementById('wheel-labels');
+  if (labels) {
+    labels.innerHTML = luckyWheelRewards.map((r, i) => {
+      let deg = i * 45 + 22.5;
+      return `
+        <div style="position:absolute; top:50%; left:50%; width:50%; height:20px; margin-top:-10px; transform-origin:0% 50%; transform:rotate(${deg}deg); display:flex; align-items:center; justify-content:flex-end; padding-right:12px; font-size:10px; font-weight:800; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,0.8);">
+          <span style="transform:rotate(90deg); display:inline-block; white-space:nowrap; max-width:65px; overflow:hidden; text-overflow:ellipsis;">${r.name}</span>
+        </div>
+      `;
+    }).join('');
+  }
+}
+
+function spinLuckyWheel() {
+  if (isSpinningWheel) return;
+  if (balance < 20000) {
+    alert('Số dư của bạn không đủ 20.000đ để quay vòng quay!');
+    scrollToTopup();
+    return;
+  }
+
+  balance -= 20000;
+  saveData();
+  draw();
+
+  isSpinningWheel = true;
+  let btn = document.getElementById('btn-spin-wheel');
+  let wheel = document.getElementById('lucky-wheel');
+  let notice = document.getElementById('wheel-notice');
+
+  btn.disabled = true;
+  notice.textContent = '🎡 Đang quay... Chúc bạn may mắn!';
+  notice.style.color = '#fbbf24';
+
+  let totalWeight = luckyWheelRewards.reduce((s, r) => s + (parseInt(r.weight) || 1), 0);
+  let random = Math.random() * totalWeight;
+  let chosenIdx = 0;
+  let currentSum = 0;
+
+  for (let i = 0; i < luckyWheelRewards.length; i++) {
+    currentSum += (parseInt(luckyWheelRewards[i].weight) || 1);
+    if (random <= currentSum) {
+      chosenIdx = i;
+      break;
+    }
+  }
+
+  let reward = luckyWheelRewards[chosenIdx];
+
+  let sliceDeg = 45;
+  let targetDegree = 360 * 5 + (360 - (chosenIdx * sliceDeg + sliceDeg / 2));
+
+  wheel.style.transform = `rotate(${targetDegree}deg)`;
+
+  setTimeout(() => {
+    isSpinningWheel = false;
+    btn.disabled = false;
+    wheel.style.transition = 'none';
+    wheel.style.transform = `rotate(${targetDegree % 360}deg)`;
+    setTimeout(() => { wheel.style.transition = 'transform 4.5s cubic-bezier(.12,.75,.16,1)'; }, 50);
+
+    let mailMessage = '';
+    let mailCash = 0;
+
+    if (reward.type === 'cash') {
+      mailCash = parseInt(reward.value) || 0;
+      mailMessage = `🎉 Chúc mừng bạn quay trúng phần thưởng tiền mặt: <b>${money(mailCash)}</b>! Số tiền đã được sẵn sàng nhận vào ví.`;
+      notice.innerHTML = `🎉 Bạn vừa trúng <b style="color:#34d399;">${money(mailCash)}</b>! Đã gửi quà vào Hòm Thư.`;
+      notice.style.color = '#34d399';
+    } else if (reward.type === 'acc') {
+      let packKey = reward.value;
+      let availableAccs = getPackAccounts(packKey).filter(acc => {
+        let isVip = acc.endsWith(':vip');
+        let cleanRaw = isVip ? acc.slice(0, -4) : acc;
+        return !usedAccounts.has(`${packKey}_${cleanRaw}`);
+      });
+
+      if (availableAccs.length > 0) {
+        let chosenAcc = availableAccs[Math.floor(Math.random() * availableAccs.length)];
+        let isVip = chosenAcc.endsWith(':vip');
+        let cleanRaw = isVip ? chosenAcc.slice(0, -4) : chosenAcc;
+        usedAccounts.add(`${packKey}_${cleanRaw}`);
+        saveData();
+
+        let parts = cleanRaw.split(':');
+        mailMessage = `🎉 Chúc mừng bạn trúng <b>${reward.name}</b>!<br>Tài khoản: <b>${parts[0]}</b><br>Mật khẩu: <b>${parts.slice(1).join(':')}</b>`;
+      } else {
+        mailMessage = `🎉 Chúc mừng bạn trúng <b>${reward.name}</b>! Do kho tạm hết acc, vui lòng báo Admin cấp bổ sung.`;
+      }
+
+      notice.innerHTML = `🎉 Bạn vừa trúng <b style="color:#f59e0b;">${reward.name}</b>! Vui lòng mở Hòm Thư để nhận tài khoản.`;
+      notice.style.color = '#f59e0b';
+    } else {
+      mailMessage = `💬 Thổng báo Vòng Quay: ${reward.value || reward.name}`;
+      notice.innerHTML = `💬 ${reward.name}`;
+      notice.style.color = '#cbd5e1';
+    }
+
+    rewardMailbox.unshift({
+      title: `🎡 Vòng Quay May Mắn - ${reward.name}`,
+      message: mailMessage,
+      cash: mailCash,
+      opened: false,
+      time: new Date().toLocaleString('vi-VN')
+    });
+
+    saveRewardMailbox();
+    renderWheelMailbox();
+    renderRewardMailbox();
+
+    history.unshift(`<span>Quay Vòng Quay May Mắn trúng <b>${reward.name}</b></span> <span style="color:#fbbf24;">-20.000đ</span>`);
+    saveData();
+    draw();
+
+    checkDailyTaskWheel();
+  }, 4500);
+}
+
+function renderWheelMailbox() {
+  let list = document.getElementById('wheel-mailbox-list');
+  if (!list) return;
+
+  if (!rewardMailbox || rewardMailbox.length === 0) {
+    list.innerHTML = '<div style="color:#94a3b8; font-size:0.85rem;">Hòm thư phần thưởng của bạn đang trống.</div>';
+    return;
+  }
+
+  list.innerHTML = rewardMailbox.map((mail, idx) => `
+    <div style="background:#1e293b; border:1px solid #475569; border-radius:8px; padding:10px; margin-bottom:8px; font-size:0.85rem;">
+      <div style="font-weight:800; color:#fbbf24;">${mail.title}</div>
+      <div style="color:#cbd5e1; margin:4px 0;">${mail.message}</div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px; font-size:0.75rem; color:#94a3b8;">
+        <span>${mail.time}</span>
+        ${mail.opened
+          ? '<span style="color:#10b981; font-weight:700;">Đã mở</span>'
+          : `<button onclick="claimRewardMail(\${idx})" style="background:#10b981; color:white; border:0; padding:4px 10px; border-radius:6px; cursor:pointer; font-weight:700;">Nhận Quà</button>`
+        }
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ===== NHIỆM VỤ HẰNG NGÀY & ĐỔI QUÀ BẰNG ĐIỂM ===== */
+let userPoints = localStorage.getItem('shop_user_points') !== null
+  ? parseInt(localStorage.getItem('shop_user_points'))
+  : 0;
+
+let taskStatus = localStorage.getItem('shop_task_status')
+  ? JSON.parse(localStorage.getItem('shop_task_status'))
+  : {};
+
+let pointRequests = localStorage.getItem('shop_point_requests')
+  ? JSON.parse(localStorage.getItem('shop_point_requests'))
+  : [];
+
+function saveTaskData() {
+  localStorage.setItem('shop_user_points', userPoints);
+  localStorage.setItem('shop_task_status', JSON.stringify(taskStatus));
+}
+
+function savePointRequests() {
+  localStorage.setItem('shop_point_requests', JSON.stringify(pointRequests));
+}
+
+function getTodayKey() {
+  return new Date().toLocaleDateString('vi-VN');
+}
+
+const DAILY_TASKS = [
+  { id: 'login', title: 'Điểm danh hằng ngày', desc: 'Đăng nhập trang web mỗi ngày', points: 1, type: 'daily' },
+  { id: 'topup100k', title: 'Tích lũy nạp tiền', desc: 'Cứ nạp đủ 100.000đ nhận 1 điểm (tự động cộng)', points: 1, type: 'repeat' },
+  { id: 'buyAcc', title: 'Mua 1 tài khoản bất kỳ', desc: 'Thực hiện 1 giao dịch mua hàng thành công', points: 2, type: 'daily' },
+  { id: 'spinWheel', title: 'Thử vận may vòng quay', desc: 'Quay Vòng Quay May Mắn 1 lần', points: 2, type: 'daily' },
+  { id: 'top3bxh', title: 'Lọt TOP 3 Bảng Xếp Hạng', desc: 'Đạt vị trí Top 1, Top 2 hoặc Top 3 Nạp', points: 5, type: 'daily' }
+];
+
+const POINT_REWARDS = [
+  { id: 'acc50', title: '1 Acc ngẫu nhiên trong kho', points: 50, desc: 'Duyệt xong gửi thẳng tài khoản vào Hòm Thư' },
+  { id: 'dis10', title: 'Vé giảm giá 10% khi mua hàng', points: 15, desc: 'Giảm 10% cho đơn hàng tiếp theo', kind: 'discount', discount: 10 },
+  { id: 'dis20', title: 'Vé giảm giá 20% khi mua hàng', points: 25, desc: 'Giảm 20% cho đơn hàng tiếp theo', kind: 'discount', discount: 20 },
+  { id: 'vip100', title: 'Vé 50% + 1 Acc VIP ngẫu nhiên', points: 100, desc: 'Phần thưởng cực giá trị dành cho thành viên chăm chỉ' }
+];
+
+function renderDailyTasks() {
+  let list = document.getElementById('daily-task-list');
+  let ptsBalance = document.getElementById('points-balance');
+  if (ptsBalance) ptsBalance.textContent = userPoints;
+
+  if (!list) return;
+
+  let today = getTodayKey();
+
+  list.innerHTML = DAILY_TASKS.map(task => {
+    let completed = false;
+    let taskKey = `${task.id}_${today}`;
+
+    if (task.type === 'daily' && taskStatus[taskKey]) completed = true;
+
+    return `
+      <div style="background:#1e293b; border:1px solid #475569; border-radius:8px; padding:12px; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <div style="font-weight:800; color:#f1f5f9; font-size:0.9rem;">${task.title} <span style="color:#fbbf24;">(+${task.points} điểm)</span></div>
+          <div style="font-size:0.8rem; color:#cbd5e1; margin-top:2px;">${task.desc}</div>
+        </div>
+        <div>
+          ${task.id === 'login'
+            ? `<button onclick="claimLoginTask()" ${completed ? 'disabled style="background:#64748b;"' : 'style="background:#10b981;"'} class="btn-primary" style="padding:6px 12px; font-size:0.8rem; width:auto;">${completed ? 'Đã Nhận' : 'Nhận Điểm'}</button>`
+            : `<span style="font-size:0.8rem; font-weight:700; color:${completed ? '#34d399' : '#fbbf24'};">${completed ? '✅ Đã hoàn thành' : '⏳ Tự động'}</span>`
+          }
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function claimLoginTask() {
+  let today = getTodayKey();
+  let taskKey = `login_${today}`;
+
+  if (taskStatus[taskKey]) return;
+
+  taskStatus[taskKey] = true;
+  userPoints += 1;
+  saveTaskData();
+
+  let notice = document.getElementById('task-notice');
+  if (notice) {
+    notice.style.color = '#34d399';
+    notice.textContent = '🎉 Điểm danh thành công! +1 điểm tích lũy.';
+  }
+
+  draw();
+}
+
+function checkDailyTaskWheel() {
+  let today = getTodayKey();
+  let taskKey = `spinWheel_${today}`;
+
+  if (!taskStatus[taskKey]) {
+    taskStatus[taskKey] = true;
+    userPoints += 2;
+    saveTaskData();
+    draw();
+  }
+}
+
+function checkDailyTopTask() {
+  let today = getTodayKey();
+  let taskKey = `top3bxh_${today}`;
+
+  if (taskStatus[taskKey]) return;
+
+  let allUsers = [...demoDepositors];
+  let currentUserIndex = allUsers.findIndex(u => u.username === 'Bạn (Tài khoản hiện tại)');
+  if (currentUserIndex >= 0) allUsers[currentUserIndex].total = totalDeposited;
+  else allUsers.push({ username: 'Bạn (Tài khoản hiện tại)', total: totalDeposited, isSelf: true });
+
+  allUsers.sort((a, b) => b.total - a.total);
+  let userRank = allUsers.findIndex(u => u.isSelf) + 1;
+
+  if (userRank > 0 && userRank <= 3) {
+    taskStatus[taskKey] = true;
+    userPoints += 5;
+    saveTaskData();
+    draw();
+  }
+}
+
+function renderPointRewards() {
+  let list = document.getElementById('point-reward-list');
+  if (!list) return;
+
+  list.innerHTML = POINT_REWARDS.map(r => `
+    <div style="background:#1e293b; border:1px solid #475569; border-radius:8px; padding:12px; display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <div style="font-weight:800; color:#e9d5ff; font-size:0.9rem;">${r.title}</div>
+        <div style="font-size:0.8rem; color:#cbd5e1; margin-top:2px;">${r.desc}</div>
+      </div>
+      <div>
+        <button onclick="requestPointReward('${r.id}')" ${userPoints < r.points ? 'disabled style="background:#64748b;"' : 'style="background:linear-gradient(135deg,#c084fc,#9333ea);"' } class="btn-primary" style="padding:7px 14px; font-size:0.8rem; width:auto;">
+          Đổi (${r.points}P)
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function requestPointReward(rewardId) {
+  let reward = POINT_REWARDS.find(r => r.id === rewardId);
+  let notice = document.getElementById('redeem-notice');
+
+  if (!reward) return;
+  if (userPoints < reward.points) {
+    if (notice) {
+      notice.style.color = '#f87171';
+      notice.textContent = `Bạn không đủ điểm! Cần ${reward.points} điểm để đổi quà này.`;
+    }
+    return;
+  }
+
+  userPoints -= reward.points;
+  saveTaskData();
+
+  let reqId = `REQ-${Date.now().toString().slice(-6)}`;
+  pointRequests.unshift({
+    id: reqId,
+    rewardId: reward.id,
+    rewardTitle: reward.title,
+    pointsUsed: reward.points,
+    status: 'pending',
+    date: new Date().toLocaleString('vi-VN')
+  });
+
+  savePointRequests();
+
+  if (notice) {
+    notice.style.color = '#34d399';
+    notice.textContent = `✅ Đã gửi yêu cầu đổi quà "${reward.title}"! Đang chờ Admin duyệt.`;
+  }
+
+  draw();
+}
+
+function renderPointRequests() {
+  let list = document.getElementById('point-request-list');
+  if (!list) return;
+
+  if (pointRequests.length === 0) {
+    list.innerHTML = '<div style="color:#94a3b8; font-size:0.85rem;">Chưa có yêu cầu đổi quà nào.</div>';
+    return;
+  }
+
+  list.innerHTML = pointRequests.map(req => {
+    let statusText = '⏳ Đang chờ Admin duyệt';
+    let statusColor = '#fbbf24';
+
+    if (req.status === 'approved') {
+      statusText = '✅ Đã duyệt (Đã gửi Hòm Thư)';
+      statusColor = '#34d399';
+    } else if (req.status === 'rejected') {
+      statusText = '❌ Từ chối';
+      statusColor = '#f87171';
+    }
+
+    return `
+      <div style="background:#1e293b; border:1px solid #475569; border-radius:8px; padding:10px; margin-bottom:8px; font-size:0.85rem;">
+        <div style="font-weight:800; color:#f1f5f9;">${req.rewardTitle} <span style="color:#a855f7;">(-${req.pointsUsed}P)</span></div>
+        <div style="display:flex; justify-content:space-between; margin-top:4px; font-size:0.78rem;">
+          <span style="color:#cbd5e1;">Mã YC: ${req.id} · ${req.date}</span>
+          <span style="font-weight:800; color:${statusColor};">${statusText}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderAdminPointRequests() {
+  let list = document.getElementById('admin-point-request-list');
+  if (!list) return;
+
+  let pending = pointRequests.filter(r => r.status === 'pending');
+
+  if (pending.length === 0) {
+    list.innerHTML = '<div style="color:#94a3b8; font-size:0.85rem;">Không có yêu cầu đổi quà nào đang chờ duyệt.</div>';
+    return;
+  }
+
+  list.innerHTML = pending.map(req => `
+    <div style="border-bottom:1px solid #475569; padding:10px 0; font-size:0.85rem; display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <b style="color:#fbbf24;">${req.rewardTitle}</b> (${req.pointsUsed} Điểm)<br>
+        <span style="color:#cbd5e1; font-size:0.78rem;">Mã YC: ${req.id} · Thời gian: ${req.date}</span>
+      </div>
+      <div style="display:flex; gap:6px;">
+        <button onclick="approvePointRequest('${req.id}')" style="background:#10b981; color:white; border:0; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:800;">Duyệt</button>
+        <button onclick="rejectPointRequest('${req.id}')" style="background:#ef4444; color:white; border:0; padding:6px 12px; border-radius:6px; cursor:pointer; font-weight:800;">Từ Chối</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function rejectPointRequest(reqId) {
+  let req = pointRequests.find(r => r.id === reqId);
+  if (!req) return;
+
+  req.status = 'rejected';
+  userPoints += req.pointsUsed;
+  savePointRequests();
+  saveTaskData();
+
+  draw();
+  alert('Đã từ chối yêu cầu và hoàn lại điểm cho thành viên!');
+}
+
+function renderDemoPointStats() {
+  setInterval(() => {
+    if (totalDeposited >= 100000) {
+      let earned = Math.floor(totalDeposited / 100000);
+      let lastEarned = parseInt(localStorage.getItem('shop_last_earned_points') || '0');
+      if (earned > lastEarned) {
+        userPoints += (earned - lastEarned);
+        localStorage.setItem('shop_last_earned_points', earned);
+        saveTaskData();
+        draw();
+      }
+    }
+  }, 2000);
+}
+</script>
+</body>
+</html>
